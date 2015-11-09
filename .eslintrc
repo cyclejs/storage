@@ -1,6 +1,7 @@
 {
   "extends": "eslint-config-cycle",
   "env": {
-    "browser": true
+    "browser": true,
+    "node": true
   }
 }
