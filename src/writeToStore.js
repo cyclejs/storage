@@ -1,5 +1,5 @@
 /**
- * @function doAction
+ * @function writeToStore
  * @description
  * A universal write function for localStorage and sessionStorage.
  * @param {object} request - the storage request object
@@ -8,7 +8,7 @@
  * @param {string} request.key - the key of a storage item
  * @param {string} request.value - the value of a storage item
  */
-function doAction(request) {
+function writeToStore(request) {
   // Determine the storage target.
   const storage = request.target === `local` ? localStorage : sessionStorage
 
@@ -16,4 +16,4 @@ function doAction(request) {
   storage[request.action](request.key, request.value)
 }
 
-export default doAction
+export default writeToStore

@@ -2,21 +2,20 @@
   "name": "cycle-storage-driver",
   "version": "1.0.0",
   "description": "A Cycle.js driver for localStorage and sessionStorage.",
-  "main": "index.js",
-  "scripts": {
-    "test": "ava"
-  },
+  "main": "lib/index.js",
+  "scripts": "",
   "author": "Kahlil Lechelt",
   "license": "MIT",
   "devDependencies": {
-    "ava": "^0.4.2",
-    "babel-core": "^6.1.2",
     "babel-eslint": "^4.1.4",
-    "babel-preset-es2015": "^6.1.2",
+    "babelify": "^7.2.0",
+    "browserify": "^12.0.1",
     "eslint": "^1.9.0",
     "eslint-config-cycle": "^3.0.0",
-    "esnow": "^2.0.1",
-    "rx": "^4.0.6"
+    "mocha": "^2.3.3",
+    "rx": "^4.0.6",
+    "watchify": "^3.6.0",
+    "zuul": "^3.7.2"
   },
   "babel": {
     "preset": "es2015"
