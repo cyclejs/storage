@@ -1,4 +1,4 @@
-name: quickstart
+name: cycle-storage-driver
 ui: tape
 browsers:
   - name: firefox

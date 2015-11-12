@@ -1,0 +1,13 @@
+{
+  "extends": "eslint-config-cycle",
+  "rules": {
+    "no-var": 0,
+    "quotes": [2, "single", "avoid-escape"],
+    "func-names": 0,
+    "max-len": 0
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  }
+}
