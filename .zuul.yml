@@ -1,12 +1,8 @@
-ui: mocha-bdd
-server: ./test/support/server.js
+name: quickstart
+ui: tape
 browsers:
   - name: firefox
-    version: latest
-    platform: Mac 10.10
+    platform: linux
+    version: 30..latest
   - name: chrome
-    version: latest
-  - name: safari
-    version: latest
-  - name: ie
-    version: 9..latest
+    version: 30..beta
