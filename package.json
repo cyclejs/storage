@@ -13,6 +13,7 @@
   },
   "author": "Kahlil Lechelt",
   "license": "MIT",
+  "repository": "kahlil/cycle-storage-driver",
   "dependencies": {
     "rx": "^4.0.6"
   },
