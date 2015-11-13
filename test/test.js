@@ -1,6 +1,15 @@
 var test = require('tape')
+var makeStorageDriver = require('../lib/').makeStorageDriver
 var writeToStore = require('../lib/writeToStore').default
 var responseCollection = require('../lib/responseCollection').default
+
+test('makeStorageDriver should be a driver factory', function(t) {
+  t.plan(2)
+
+  t.strictEqual(typeof makeStorageDriver, 'function')
+  var output = makeStorageDriver()
+  t.strictEqual(typeof output, 'function')
+})
 
 // localStorage
 test('writeToStore function should write to localStore', function(t) {
