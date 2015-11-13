@@ -5,9 +5,11 @@
   "main": "lib/index.js",
   "scripts": {
     "transpile": "babel -d lib src",
-    "test": "zuul --local 8080 -- test/test.js",
+    "zuul": "zuul --local 8080 -- test/test.js",
+    "test": "npm-run-all lint transpile zuul",
     "lint": "eslint src/*.js test/*.js",
-    "prepublish": "npm run transpile"
+    "prepublish": "npm run transpile",
+    "open": "opener http://localhost:8080/__zuul"
   },
   "author": "Kahlil Lechelt",
   "license": "MIT",
@@ -26,6 +28,7 @@
     "eslint-config-cycle": "^3.0.0",
     "faucet": "0.0.1",
     "npm-run-all": "^1.2.13",
+    "opener": "^1.4.1",
     "tape": "^4.2.2",
     "watchify": "^3.6.0",
     "zuul": "^3.7.2"
