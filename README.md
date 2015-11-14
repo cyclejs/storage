@@ -52,3 +52,7 @@ function main({ DOM, storage }) {
   };
 }
 ```
+
+# License
+
+[MIT](/kahlil/cycle-storage-driver/blob/master/LICENSE)
