@@ -6,7 +6,7 @@ A [Cycle.js](http://cycle.js.org) [Driver](http://cycle.js.org/drivers.html) for
  in the browser.
 
 ```
-npm install cycle-storage-driver
+npm install --save cycle-storage-driver
 ```
 
 ## Usage
