@@ -55,4 +55,4 @@ function main({ DOM, storage }) {
 
 # License
 
-[MIT](/kahlil/cycle-storage-driver/blob/master/LICENSE)
+[MIT](https://github.com/kahlil/cycle-storage-driver/blob/master/LICENSE)
