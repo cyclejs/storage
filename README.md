@@ -11,6 +11,8 @@ npm install --save cycle-storage-driver
 
 ## Usage
 
+[API docs](https://github.com/kahlil/cycle-storage-driver/blob/master/docs/api.md)
+
 Basics:
 
 ```js
