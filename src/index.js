@@ -35,7 +35,7 @@ import responseCollection from './responseCollection'
  * responseCollection.session.getItem(key)
  * ```
  *
- * @param {Observable} an Observable of write request objects.
+ * @param {Observable} request$ - an Observable of write request objects.
  * @return {Object} the response collection containing functions
  * for reading from storage.
  * @function storageDriver

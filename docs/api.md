@@ -3,7 +3,7 @@
 
 - [`storageDriver`](#storageDriver)
 
-### <a id="storageDriver"></a> `storageDriver(an)`
+### <a id="storageDriver"></a> `storageDriver(request$)`
 
 Storage Driver.
 
@@ -40,7 +40,7 @@ responseCollection.session.getItem(key)
 
 #### Arguments:
 
-- `an :: Observable` Observable of write request objects.
+- `request$ :: Observable` - an Observable of write request objects.
 
 #### Return:
 
