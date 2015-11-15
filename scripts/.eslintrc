@@ -1,0 +1,14 @@
+{
+  "extends": "eslint-config-cycle",
+  "rules": {
+    "no-var": 0,
+    "quotes": [2, "single", "avoid-escape"],
+    "func-names": 0,
+    "max-len": 0,
+    "curly": 0,
+    "no-shadow": 0
+  },
+  "env": {
+    "node": true
+  }
+}
