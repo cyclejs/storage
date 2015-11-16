@@ -37,8 +37,8 @@
   "scripts": {
     "transpile": "babel -d lib src",
     "zuul:local": "zuul --local 8080 -- test/test.js",
-    "zuul:sauce": "zuul -- test/test.js",
-    "test": "npm-run-all lint transpile zuul:sauce",
+    "test:ci": "zuul -- test/test.js",
+    "test": "npm-run-all lint transpile zuul:local",
     "lint": "eslint src/*.js test/*.js",
     "prepublish": "npm run transpile",
     "open": "opener http://localhost:8080/__zuul",
