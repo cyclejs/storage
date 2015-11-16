@@ -2,7 +2,14 @@ name: cycle-storage-driver
 ui: tape
 browsers:
   - name: firefox
-    platform: linux
-    version: 30..latest
+    version: 34..latest
   - name: chrome
-    version: 30..beta
+    version: 34..beta
+  - name: safari
+    version: 8..latest
+  - name: internet explorer
+    version: 10..latest
+  - name: microsoftedge
+    version: 20..latest
+  - name: opera
+    version: 12..latest
