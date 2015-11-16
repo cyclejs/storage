@@ -30,7 +30,7 @@ const drivers = {
 Cycle.run(main, drivers);
 ```
 
-Simple and normal use case:
+Simple and normal use case ([JSBin demo](http://jsbin.com/xumuqi/15/edit?html,js,console,output)):
 
 ```js
 function main({DOM, storage}) {
