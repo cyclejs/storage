@@ -3,15 +3,6 @@
   "version": "0.2.0",
   "description": "A Cycle.js driver for localStorage and sessionStorage.",
   "main": "lib/index.js",
-  "scripts": {
-    "transpile": "babel -d lib src",
-    "zuul": "zuul --local 8080 -- test/test.js",
-    "test": "npm-run-all lint transpile zuul",
-    "lint": "eslint src/*.js test/*.js",
-    "prepublish": "npm run transpile",
-    "open": "opener http://localhost:8080/__zuul",
-    "docs": "node ./scripts/make-api-docs.js"
-  },
   "author": "Kahlil Lechelt",
   "license": "MIT",
   "repository": "kahlil/cycle-storage-driver",
@@ -26,6 +17,7 @@
     "babel-preset-stage-0": "^6.1.2",
     "babelify": "^7.2.0",
     "browserify": "^12.0.1",
+    "browserify-shim": "^3.8.11",
     "eslint": "^1.9.0",
     "eslint-config-cycle": "^3.0.0",
     "faucet": "0.0.1",
@@ -34,7 +26,24 @@
     "npm-run-all": "^1.2.13",
     "opener": "^1.4.1",
     "tape": "^4.2.2",
+    "uglify-js": "^2.6.0",
     "watchify": "^3.6.0",
     "zuul": "^3.7.2"
+  },
+  "browserify-shim": {
+    "rx": "global:Rx"
+  },
+  "scripts": {
+    "transpile": "babel -d lib src",
+    "zuul": "zuul --local 8080 -- test/test.js",
+    "test": "npm-run-all lint transpile zuul",
+    "lint": "eslint src/*.js test/*.js",
+    "prepublish": "npm run transpile",
+    "open": "opener http://localhost:8080/__zuul",
+    "docs": "node ./scripts/make-api-docs.js",
+    "mkdirp:dist": "mkdirp dist",
+    "browserify": "browserify src/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile dist/cycle-storage-driver.js",
+    "uglify": "uglifyjs dist/cycle-storage-driver.js -o dist/cycle-storage-driver.min.js",
+    "build:js": "npm-run-all mkdirp:dist browserify uglify"
   }
 }
