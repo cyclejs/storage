@@ -56,6 +56,9 @@ function main({DOM, storage}) {
   };
 }
 ```
+# Browser Support
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/superka.svg)](https://saucelabs.com/u/superka)
 
 # License
 
