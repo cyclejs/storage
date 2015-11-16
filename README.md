@@ -33,12 +33,10 @@ Cycle.run(main, drivers);
 Simple and normal use case:
 
 ```js
-function main({ DOM, storage }) {
-  // A stream of input values to store.
-  const storageRequest$ = DOM.select('input')
+function main({DOM, storage}) {
+   const storageRequest$ = DOM.select('input')
     .events('keypress')
-    .debounce(200)
-    .map((ev) => {
+    .map(function(ev) {
       return {
         key: 'inputText',
         value: ev.target.value
@@ -46,11 +44,14 @@ function main({ DOM, storage }) {
     });
 
   return {
-    // Return the inital vtree with data from localStorage.
-    DOM: Rx.Observable.just(
-      h('input', {type: 'text', value: storage.local.getItem('inputText')})
+    DOM: storage.local.getItem('inputText')
+    .map((text) =>
+      h('input', {
+        type: 'text',
+        value: text
+      })
     ),
-    storage: storageRequest$,
+    storage: storageRequest$
   };
 }
 ```
