@@ -56,6 +56,11 @@ function main({DOM, storage}) {
   };
 }
 ```
+# Test Status
+
+<a href="https://saucelabs.com/u/superka">
+  <img src="https://saucelabs.com/browser-matrix/superka.svg" alt="Sauce Test Status"/>
+</a>
 
 # License
 
