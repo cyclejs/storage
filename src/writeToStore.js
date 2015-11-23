@@ -8,7 +8,7 @@
  * @param {string} request.key - the key of a storage item
  * @param {string} request.value - the value of a storage item
  */
-function writeToStore({target = `local`, action = `setItem`, key, value}, storageUpdateSubject) {
+function writeToStore({target = `local`, action = `setItem`, key, value}) {
   // Determine the storage target.
   const storage = target === `local` ? localStorage : sessionStorage
 
