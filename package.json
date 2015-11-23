@@ -22,6 +22,7 @@
     "eslint-config-cycle": "^3.0.0",
     "eslint-plugin-cycle": "^1.0.2",
     "faucet": "0.0.1",
+    "live-server": "^0.8.2",
     "markdox": "^0.1.10",
     "mkdirp": "^0.5.1",
     "npm-run-all": "^1.2.13",
@@ -45,7 +46,9 @@
     "docs": "node ./scripts/make-api-docs.js",
     "mkdirp:dist": "mkdirp dist",
     "browserify": "browserify src/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile dist/cycle-storage-driver.js",
+    "browserify:example": "browserify src/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile example/cycle-storage-driver.js",
     "uglify": "uglifyjs dist/cycle-storage-driver.js -o dist/cycle-storage-driver.min.js",
-    "build:js": "npm-run-all mkdirp:dist browserify uglify"
+    "build:js": "npm-run-all mkdirp:dist browserify uglify",
+    "serve": "live-server example"
   }
 }
