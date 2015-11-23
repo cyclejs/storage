@@ -79,17 +79,24 @@ exports.default = function (request$) {
     local: {
       key: function key(n) {
         // Function returning Observable of the nth key.
-        return _rx2.default.Observable.just(localStorage.key(n));
+        // return Rx.Observable.just(localStorage.key(n))
+        return request$.filter(function (request) {
+          return request.target === 'local';
+        }).filter(function (request) {
+          return request.key === localStorage.key(n);
+        }).distinctUntilChanged().startWith(localStorage.key(n));
       },
 
       // Function returning Observable of values.
       getItem: function getItem(key) {
         // return Rx.Observable.just(localStorage.getItem(key))
         var startWith = localStorage.getItem(key) || '';
+
         return request$.filter(function (request) {
+          return !request.target || request.target === 'local';
+        }).filter(function (request) {
           return request.key === key;
         }).map(function (request) {
-          console.log(request);
           return request.value;
         }).startWith(startWith);
       }

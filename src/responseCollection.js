@@ -19,7 +19,7 @@ export default function(request$) {
         const startWith = localStorage.getItem(key) || ``
 
         return request$
-          .filter((request) => request.target === `local`)
+          .filter((request) => !request.target || request.target === `local`)
           .filter((request) => request.key === key)
           .map((request) => request.value)
           .startWith(startWith)
