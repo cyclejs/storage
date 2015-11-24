@@ -29,8 +29,9 @@ export default function(request$) {
       key(n) {
         return session$
           .filter((req) => req.key === sessionStorage.key(n))
-          .distinctUntilChanged()
+          .map((req) => req.key)
           .startWith(sessionStorage.key(n))
+          .distinctUntilChanged()
       },
       // Function returning Observable of values.
       getItem(key) {
