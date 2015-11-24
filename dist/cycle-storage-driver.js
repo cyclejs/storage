@@ -62,52 +62,73 @@ function storageDriver(request$) {
   });
 
   // Return reading functions.
-  return _responseCollection2.default;
+  return (0, _responseCollection2.default)(request$);
 }
 
 },{"./responseCollection":2,"./writeToStore":3}],2:[function(require,module,exports){
-(function (global){
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _rx = (typeof window !== "undefined" ? window['Rx'] : typeof global !== "undefined" ? global['Rx'] : null);
+exports.default = function (request$) {
+  var local$ = request$.filter(function (req) {
+    return !req.target || req.target === "local";
+  });
+  var session$ = request$.filter(function (req) {
+    return req.target === "session";
+  });
 
-var _rx2 = _interopRequireDefault(_rx);
+  return {
+    // For localStorage.
+    local: {
+      key: function key(n) {
+        // Function returning Observable of the nth key.
+        return local$.filter(function (req) {
+          return req.key === localStorage.key(n);
+        }).map(function (req) {
+          return req.key;
+        }).startWith(localStorage.key(n)).distinctUntilChanged();
+      },
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+      // Function returning Observable of item values.
+      getItem: function getItem(key) {
+        var initialValue = localStorage.getItem(key) || "";
 
-exports.default = {
-  // For localStorage.
-  local: {
-    key: function key(n) {
+        return local$.filter(function (req) {
+          return req.key === key;
+        }).map(function (req) {
+          return req.value;
+        }).startWith(initialValue);
+      }
+    },
+    // For sessionStorage.
+    session: {
       // Function returning Observable of the nth key.
-      return _rx2.default.Observable.just(localStorage.key(n));
-    },
 
-    // Function returning Observable of values.
-    getItem: function getItem(key) {
-      return _rx2.default.Observable.just(localStorage.getItem(key));
+      key: function key(n) {
+        return session$.filter(function (req) {
+          return req.key === sessionStorage.key(n);
+        }).map(function (req) {
+          return req.key;
+        }).startWith(sessionStorage.key(n)).distinctUntilChanged();
+      },
+
+      // Function returning Observable of values.
+      getItem: function getItem(key) {
+        var initialValue = sessionStorage.getItem(key) || "";
+
+        return local$.filter(function (req) {
+          return req.key === key;
+        }).map(function (req) {
+          return req.value;
+        }).startWith(initialValue);
+      }
     }
-  },
-  // For sessionStorage.
-  session: {
-    // Function returning Observable of the nth key.
-
-    key: function key(n) {
-      return _rx2.default.Observable.just(sessionStorage.key(n));
-    },
-
-    // Function returning Observable of values.
-    getItem: function getItem(key) {
-      return _rx2.default.Observable.just(sessionStorage.getItem(key));
-    }
-  }
+  };
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],3:[function(require,module,exports){
 "use strict";
 

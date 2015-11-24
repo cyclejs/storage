@@ -87,7 +87,9 @@ exports.default = function (request$) {
         // Function returning Observable of the nth key.
         return local$.filter(function (req) {
           return req.key === localStorage.key(n);
-        }).distinctUntilChanged().startWith(localStorage.key(n));
+        }).map(function (req) {
+          return req.key;
+        }).startWith(localStorage.key(n)).distinctUntilChanged();
       },
 
       // Function returning Observable of item values.
@@ -108,7 +110,9 @@ exports.default = function (request$) {
       key: function key(n) {
         return session$.filter(function (req) {
           return req.key === sessionStorage.key(n);
-        }).distinctUntilChanged().startWith(sessionStorage.key(n));
+        }).map(function (req) {
+          return req.key;
+        }).startWith(sessionStorage.key(n)).distinctUntilChanged();
       },
 
       // Function returning Observable of values.
@@ -141,7 +145,7 @@ Object.defineProperty(exports, "__esModule", {
  * @param {string} request.key - the key of a storage item
  * @param {string} request.value - the value of a storage item
  */
-function writeToStore(_ref, storageUpdateSubject) {
+function writeToStore(_ref) {
   var _ref$target = _ref.target;
   var target = _ref$target === undefined ? "local" : _ref$target;
   var _ref$action = _ref.action;
