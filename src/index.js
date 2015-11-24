@@ -45,5 +45,5 @@ export default function storageDriver(request$) {
   request$.subscribe((request) => writeToStore(request))
 
   // Return reading functions.
-  return responseCollection
+  return responseCollection(request$)
 }
