@@ -9,8 +9,9 @@ export default function(request$) {
         // Function returning Observable of the nth key.
         return local$
           .filter((req) => req.key === localStorage.key(n))
-          .distinctUntilChanged()
+          .map((req) => req.key)
           .startWith(localStorage.key(n))
+          .distinctUntilChanged()
       },
       // Function returning Observable of item values.
       getItem(key) {
