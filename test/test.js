@@ -202,7 +202,7 @@ test('responseCollection.session.key(n) should return an Observable of the nth k
 })
 
 test('responseCollection.session.getItem(key) should return an Observable item in sessionStorage', function(t) {
-  t.plan(1)
+  t.plan(3)
 
   var testData = [
     {
