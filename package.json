@@ -49,8 +49,6 @@
     "browserify:example": "browserify src/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile example/cycle-storage-driver.js",
     "uglify": "uglifyjs dist/cycle-storage-driver.js -o dist/cycle-storage-driver.min.js",
     "build:js": "npm-run-all mkdirp:dist browserify browserify:example uglify",
-    "publish:minor": "npm run build:js && npm version minor && npm publish && git push",
-    "publish:minor": "npm run build:js && npm version major && npm publish && git push",
     "serve": "live-server example"
   }
 }

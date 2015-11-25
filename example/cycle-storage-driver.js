@@ -87,18 +87,26 @@ exports.default = function (request$) {
         // Function returning Observable of the nth key.
         return local$.filter(function (req) {
           return req.key === localStorage.key(n);
-        }).distinctUntilChanged().startWith(localStorage.key(n));
+        }).map(function (req) {
+          return req.key;
+        }).startWith(localStorage.key(n)).distinctUntilChanged();
       },
 
       // Function returning Observable of item values.
       getItem: function getItem(key) {
-        var initialValue = localStorage.getItem(key) || "";
+        var initialValue = localStorage.getItem(key);
 
-        return local$.filter(function (req) {
+        var value$ = local$.filter(function (req) {
           return req.key === key;
         }).map(function (req) {
           return req.value;
-        }).startWith(initialValue);
+        });
+
+        if (initialValue === null) {
+          return value$.startWith(initialValue);
+        } else {
+          return value$;
+        }
       }
     },
     // For sessionStorage.
@@ -108,18 +116,26 @@ exports.default = function (request$) {
       key: function key(n) {
         return session$.filter(function (req) {
           return req.key === sessionStorage.key(n);
-        }).distinctUntilChanged().startWith(sessionStorage.key(n));
+        }).map(function (req) {
+          return req.key;
+        }).startWith(sessionStorage.key(n)).distinctUntilChanged();
       },
 
       // Function returning Observable of values.
       getItem: function getItem(key) {
-        var initialValue = sessionStorage.getItem(key) || "";
+        var initialValue = sessionStorage.getItem(key);
 
-        return local$.filter(function (req) {
+        var value$ = session$.filter(function (req) {
           return req.key === key;
         }).map(function (req) {
           return req.value;
-        }).startWith(initialValue);
+        });
+
+        if (initialValue === null) {
+          return value$.startWith(initialValue);
+        } else {
+          return value$;
+        }
       }
     }
   };
@@ -141,7 +157,7 @@ Object.defineProperty(exports, "__esModule", {
  * @param {string} request.key - the key of a storage item
  * @param {string} request.value - the value of a storage item
  */
-function writeToStore(_ref, storageUpdateSubject) {
+function writeToStore(_ref) {
   var _ref$target = _ref.target;
   var target = _ref$target === undefined ? "local" : _ref$target;
   var _ref$action = _ref.action;
