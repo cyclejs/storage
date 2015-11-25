@@ -131,7 +131,7 @@ test('responseCollection.local.key(n) should return an Observable of the nth key
 })
 
 test('responseCollection.local.getItem(key) should return an Observable item in localStorage', function(t) {
-  t.plan(3)
+  t.plan(2)
 
   var testData = [
     {
@@ -154,7 +154,7 @@ test('responseCollection.local.getItem(key) should return an Observable item in 
 
   var item$ = responseCollection(request$).local.getItem('testKey')
   var i = 0
-  var expected = ['testValue', 'testValue1', 'testValue2']
+  var expected = ['testValue1', 'testValue2']
 
   item$.subscribe(function(item) {
     t.equal(item, expected[i])
@@ -202,7 +202,7 @@ test('responseCollection.session.key(n) should return an Observable of the nth k
 })
 
 test('responseCollection.session.getItem(key) should return an Observable item in sessionStorage', function(t) {
-  t.plan(3)
+  t.plan(2)
 
   var testData = [
     {
@@ -225,7 +225,7 @@ test('responseCollection.session.getItem(key) should return an Observable item i
 
   var item$ = responseCollection(request$).session.getItem('testKey')
   var i = 0
-  var expected = ['testValue', 'testValue1', 'testValue2']
+  var expected = ['testValue1', 'testValue2']
 
   item$.subscribe(function(item) {
     t.equal(item, expected[i])
