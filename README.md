@@ -44,7 +44,8 @@ function main({DOM, storage}) {
     });
 
   return {
-    DOM: storage.local.getItem('inputText')
+    DOM: storage.local
+    .getItem('inputText')
     .startWith('')
     .map((text) =>
       h('input', {
