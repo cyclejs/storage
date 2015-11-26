@@ -131,7 +131,7 @@ test('responseCollection.local.key(n) should return an Observable of the nth key
 })
 
 test('responseCollection.local.getItem(key) should return an Observable item in localStorage', function(t) {
-  t.plan(2)
+  t.plan(3)
 
   var testData = [
     {
@@ -154,7 +154,7 @@ test('responseCollection.local.getItem(key) should return an Observable item in 
 
   var item$ = responseCollection(request$).local.getItem('testKey')
   var i = 0
-  var expected = ['testValue1', 'testValue2']
+  var expected = ['testValue', 'testValue1', 'testValue2']
 
   item$.subscribe(function(item) {
     t.equal(item, expected[i])
@@ -162,6 +162,20 @@ test('responseCollection.local.getItem(key) should return an Observable item in 
   })
 
   localStorage.clear()
+})
+
+test('responseCollection.local.getItem(key) not emit if localStorage does not contain item for key', function(t) {
+  var request$ = Rx.Observable.empty()
+
+  var item$ = responseCollection(request$).local.getItem('notExisting')
+
+  item$.subscribe(function() {
+    t.fail('no item should be emitted.')
+  }, function() {
+    t.fail('unxepected error')
+  }, function() {
+    t.end()
+  })
 })
 
 test('responseCollection.session.key(n) should return an Observable of the nth key in sessionStorage', function(t) {
@@ -202,7 +216,7 @@ test('responseCollection.session.key(n) should return an Observable of the nth k
 })
 
 test('responseCollection.session.getItem(key) should return an Observable item in sessionStorage', function(t) {
-  t.plan(2)
+  t.plan(3)
 
   var testData = [
     {
@@ -225,7 +239,7 @@ test('responseCollection.session.getItem(key) should return an Observable item i
 
   var item$ = responseCollection(request$).session.getItem('testKey')
   var i = 0
-  var expected = ['testValue1', 'testValue2']
+  var expected = ['testValue', 'testValue1', 'testValue2']
 
   item$.subscribe(function(item) {
     t.equal(item, expected[i])
@@ -233,4 +247,18 @@ test('responseCollection.session.getItem(key) should return an Observable item i
   })
 
   sessionStorage.clear()
+})
+
+test('responseCollection.local.getItem(key) not emit if sessionStorage does not contain item for key', function(t) {
+  var request$ = Rx.Observable.empty()
+
+  var item$ = responseCollection(request$).session.getItem('notExisting')
+
+  item$.subscribe(function() {
+    t.fail('no item should be emitted.')
+  }, function() {
+    t.fail('unxepected error')
+  }, function() {
+    t.end()
+  })
 })
