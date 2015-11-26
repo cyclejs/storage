@@ -102,7 +102,7 @@ exports.default = function (request$) {
           return req.value;
         });
 
-        if (initialValue === null) {
+        if (initialValue !== null) {
           return value$.startWith(initialValue);
         } else {
           return value$;
@@ -131,7 +131,7 @@ exports.default = function (request$) {
           return req.value;
         });
 
-        if (initialValue === null) {
+        if (initialValue !== null) {
           return value$.startWith(initialValue);
         } else {
           return value$;
