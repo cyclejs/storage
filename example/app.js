@@ -17,7 +17,9 @@ function main(response) {
     });
 
   return {
-    DOM: storage.local.getItem('inputText')
+    DOM: storage.local
+    .getItem('inputText')
+    .startWith('')
     .map(function(text) {
       return h('div', [
         h('input', { type: 'text', value: text}),
