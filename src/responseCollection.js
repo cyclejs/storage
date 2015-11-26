@@ -21,7 +21,7 @@ export default function(request$) {
           .filter((req) => req.key === key)
           .map((req) => req.value)
 
-        if (initialValue === null) {
+        if (initialValue !== null) {
           return value$.startWith(initialValue)
         } else {
           return value$
@@ -46,7 +46,7 @@ export default function(request$) {
           .filter((req) => req.key === key)
           .map((req) => req.value)
 
-        if (initialValue === null) {
+        if (initialValue !== null) {
           return value$.startWith(initialValue)
         } else {
           return value$
