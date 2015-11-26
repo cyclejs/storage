@@ -6,6 +6,22 @@
   "author": "Kahlil Lechelt",
   "license": "MIT",
   "repository": "kahlil/cycle-storage-driver",
+  "scripts": {
+    "transpile": "babel -d lib src",
+    "zuul:local": "zuul --local 8080 -- test/test.js",
+    "test:ci": "zuul -- test/test.js",
+    "test": "npm-run-all lint transpile zuul:local",
+    "lint": "eslint src/*.js test/*.js",
+    "prepublish": "npm run transpile",
+    "open": "opener http://localhost:8080/__zuul",
+    "docs": "node ./scripts/make-api-docs.js",
+    "mkdirp:dist": "mkdirp dist",
+    "browserify": "browserify src/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile dist/cycle-storage-driver.js",
+    "browserify:example": "browserify src/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile example/cycle-storage-driver.js",
+    "uglify": "uglifyjs dist/cycle-storage-driver.js -o dist/cycle-storage-driver.min.js",
+    "build:js": "npm-run-all mkdirp:dist browserify browserify:example uglify",
+    "serve": "live-server example"
+  },
   "dependencies": {
     "rx": "^4.0.6"
   },
@@ -34,21 +50,5 @@
   },
   "browserify-shim": {
     "rx": "global:Rx"
-  },
-  "scripts": {
-    "transpile": "babel -d lib src",
-    "zuul:local": "zuul --local 8080 -- test/test.js",
-    "test:ci": "zuul -- test/test.js",
-    "test": "npm-run-all lint transpile zuul:local",
-    "lint": "eslint src/*.js test/*.js",
-    "prepublish": "npm run transpile",
-    "open": "opener http://localhost:8080/__zuul",
-    "docs": "node ./scripts/make-api-docs.js",
-    "mkdirp:dist": "mkdirp dist",
-    "browserify": "browserify src/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile dist/cycle-storage-driver.js",
-    "browserify:example": "browserify src/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile example/cycle-storage-driver.js",
-    "uglify": "uglifyjs dist/cycle-storage-driver.js -o dist/cycle-storage-driver.min.js",
-    "build:js": "npm-run-all mkdirp:dist browserify browserify:example uglify",
-    "serve": "live-server example"
   }
 }
