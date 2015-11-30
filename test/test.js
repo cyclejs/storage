@@ -254,7 +254,7 @@ test('responseCollection.local.getItem(key) emit null if sessionStorage does not
   var request$ = Rx.Observable.empty()
   var item$ = responseCollection(request$).session.getItem('notExisting')
 
-  item$.subscribe(function() {
+  item$.subscribe(function(response) {
     t.equal(response, null)
   }, function() {
     t.fail('unxepected error')
