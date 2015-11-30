@@ -164,17 +164,16 @@ test('responseCollection.local.getItem(key) should return an Observable item in 
   localStorage.clear()
 })
 
-test('responseCollection.local.getItem(key) not emit if localStorage does not contain item for key', function(t) {
-  var request$ = Rx.Observable.empty()
+test('responseCollection.local.getItem(key) emit null if localStorage does not contain item for key', function(t) {
+  t.plan(1)
 
+  var request$ = Rx.Observable.empty()
   var item$ = responseCollection(request$).local.getItem('notExisting')
 
-  item$.subscribe(function() {
-    t.fail('no item should be emitted.')
+  item$.subscribe(function(response) {
+    t.equal(response, null)
   }, function() {
     t.fail('unxepected error')
-  }, function() {
-    t.end()
   })
 })
 
@@ -249,13 +248,14 @@ test('responseCollection.session.getItem(key) should return an Observable item i
   sessionStorage.clear()
 })
 
-test('responseCollection.local.getItem(key) not emit if sessionStorage does not contain item for key', function(t) {
-  var request$ = Rx.Observable.empty()
+test('responseCollection.local.getItem(key) emit null if sessionStorage does not contain item for key', function(t) {
+  t.plan(1)
 
+  var request$ = Rx.Observable.empty()
   var item$ = responseCollection(request$).session.getItem('notExisting')
 
   item$.subscribe(function() {
-    t.fail('no item should be emitted.')
+    t.equal(response, null)
   }, function() {
     t.fail('unxepected error')
   }, function() {
