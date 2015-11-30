@@ -15,17 +15,10 @@ export default function(request$) {
       },
       // Function returning Observable of item values.
       getItem(key) {
-        const initialValue = localStorage.getItem(key)
-
-        const value$ = local$
+        return local$
           .filter((req) => req.key === key)
           .map((req) => req.value)
-
-        if (initialValue !== null) {
-          return value$.startWith(initialValue)
-        } else {
-          return value$
-        }
+          .startWith(localStorage.getItem(key))
       },
     },
     // For sessionStorage.
@@ -40,17 +33,10 @@ export default function(request$) {
       },
       // Function returning Observable of values.
       getItem(key) {
-        const initialValue = sessionStorage.getItem(key)
-
-        const value$ = session$
+        return session$
           .filter((req) => req.key === key)
           .map((req) => req.value)
-
-        if (initialValue !== null) {
-          return value$.startWith(initialValue)
-        } else {
-          return value$
-        }
+          .startWith(sessionStorage.getItem(key))
       },
     },
   }
