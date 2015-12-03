@@ -65,83 +65,95 @@ function storageDriver(request$) {
   return (0, _responseCollection2.default)(request$);
 }
 
-},{"./responseCollection":2,"./writeToStore":3}],2:[function(require,module,exports){
-"use strict";
+},{"./responseCollection":2,"./writeToStore":4}],2:[function(require,module,exports){
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
 exports.default = function (request$) {
-  var local$ = request$.filter(function (req) {
-    return !req.target || req.target === "local";
-  });
-  var session$ = request$.filter(function (req) {
-    return req.target === "session";
-  });
-
   return {
     // For localStorage.
-    local: {
-      key: function key(n) {
-        // Function returning Observable of the nth key.
-        return local$.filter(function (req) {
-          return req.key === localStorage.key(n);
-        }).map(function (req) {
-          return req.key;
-        }).startWith(localStorage.key(n)).distinctUntilChanged();
-      },
-
-      // Function returning Observable of item values.
-      getItem: function getItem(key) {
-        var initialValue = localStorage.getItem(key);
-
-        var value$ = local$.filter(function (req) {
-          return req.key === key;
-        }).map(function (req) {
-          return req.value;
-        });
-
-        if (initialValue !== null) {
-          return value$.startWith(initialValue);
-        } else {
-          return value$;
-        }
-      }
+    get local() {
+      return (0, _util2.default)(request$);
     },
     // For sessionStorage.
-    session: {
-      // Function returning Observable of the nth key.
-
-      key: function key(n) {
-        return session$.filter(function (req) {
-          return req.key === sessionStorage.key(n);
-        }).map(function (req) {
-          return req.key;
-        }).startWith(sessionStorage.key(n)).distinctUntilChanged();
-      },
-
-      // Function returning Observable of values.
-      getItem: function getItem(key) {
-        var initialValue = sessionStorage.getItem(key);
-
-        var value$ = session$.filter(function (req) {
-          return req.key === key;
-        }).map(function (req) {
-          return req.value;
-        });
-
-        if (initialValue !== null) {
-          return value$.startWith(initialValue);
-        } else {
-          return value$;
-        }
-      }
+    get session() {
+      return (0, _util2.default)(request$, 'session');
     }
   };
 };
 
-},{}],3:[function(require,module,exports){
+var _util = require('./util');
+
+var _util2 = _interopRequireDefault(_util);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+},{"./util":3}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = getResponseObj;
+function getStorage$(request$, type) {
+  if (type === "local") {
+    return request$.filter(function (req) {
+      return !req.target || req.target === "local";
+    });
+  } else {
+    return request$.filter(function (req) {
+      return req.target === "session";
+    });
+  }
+}
+
+function storageKey(n, request$) {
+  var type = arguments.length <= 2 || arguments[2] === undefined ? "local" : arguments[2];
+
+  var storage$ = getStorage$(request$, type);
+  var key = type === "local" ? localStorage.key(n) : sessionStorage.key(n);
+
+  return storage$.filter(function (req) {
+    return req.key === key;
+  }).map(function (req) {
+    return req.key;
+  }).startWith(key).distinctUntilChanged();
+}
+
+function storageGetItem(key, request$) {
+  var type = arguments.length <= 2 || arguments[2] === undefined ? "local" : arguments[2];
+
+  var storage$ = getStorage$(request$, type);
+  var storageObj = type === "local" ? localStorage : sessionStorage;
+
+  return storage$.filter(function (req) {
+    return req.key === key;
+  }).map(function (req) {
+    return req.value;
+  }).startWith(storageObj.getItem(key));
+}
+
+function getResponseObj(request$) {
+  var type = arguments.length <= 1 || arguments[1] === undefined ? "local" : arguments[1];
+
+  return {
+    // Function returning Observable of the nth key.
+
+    key: function key(n) {
+      return storageKey(n, request$, type);
+    },
+
+    // Function returning Observable of item values.
+    getItem: function getItem(key) {
+      return storageGetItem(key, request$, type);
+    }
+  };
+}
+
+},{}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
