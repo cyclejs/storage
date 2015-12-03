@@ -1,6 +1,6 @@
 {
   "name": "@cycle/storage",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A Cycle.js driver for localStorage and sessionStorage.",
   "main": "lib/index.js",
   "author": "Kahlil Lechelt",
