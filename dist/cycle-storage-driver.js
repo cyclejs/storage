@@ -92,29 +92,35 @@ var _util2 = _interopRequireDefault(_util);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 },{"./util":3}],3:[function(require,module,exports){
-"use strict";
+(function (global){
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = getResponseObj;
+
+var _rx = (typeof window !== "undefined" ? window['Rx'] : typeof global !== "undefined" ? global['Rx'] : null);
+
+var _rx2 = _interopRequireDefault(_rx);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function getStorage$(request$, type) {
-  if (type === "local") {
-    return request$.filter(function (req) {
-      return !req.target || req.target === "local";
-    });
-  } else {
-    return request$.filter(function (req) {
-      return req.target === "session";
-    });
-  }
+  return _rx2.default.Observable.if(function () {
+    return type === 'local';
+  }, request$.filter(function (req) {
+    return !req.target || req.target === 'local';
+  }), request$.filter(function (req) {
+    return req.target === 'session';
+  }));
 }
 
 function storageKey(n, request$) {
-  var type = arguments.length <= 2 || arguments[2] === undefined ? "local" : arguments[2];
+  var type = arguments.length <= 2 || arguments[2] === undefined ? 'local' : arguments[2];
 
   var storage$ = getStorage$(request$, type);
-  var key = type === "local" ? localStorage.key(n) : sessionStorage.key(n);
+  var key = type === 'local' ? localStorage.key(n) : sessionStorage.key(n);
 
   return storage$.filter(function (req) {
     return req.key === key;
@@ -124,10 +130,10 @@ function storageKey(n, request$) {
 }
 
 function storageGetItem(key, request$) {
-  var type = arguments.length <= 2 || arguments[2] === undefined ? "local" : arguments[2];
+  var type = arguments.length <= 2 || arguments[2] === undefined ? 'local' : arguments[2];
 
   var storage$ = getStorage$(request$, type);
-  var storageObj = type === "local" ? localStorage : sessionStorage;
+  var storageObj = type === 'local' ? localStorage : sessionStorage;
 
   return storage$.filter(function (req) {
     return req.key === key;
@@ -137,7 +143,7 @@ function storageGetItem(key, request$) {
 }
 
 function getResponseObj(request$) {
-  var type = arguments.length <= 1 || arguments[1] === undefined ? "local" : arguments[1];
+  var type = arguments.length <= 1 || arguments[1] === undefined ? 'local' : arguments[1];
 
   return {
     // Function returning Observable of the nth key.
@@ -153,6 +159,7 @@ function getResponseObj(request$) {
   };
 }
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],4:[function(require,module,exports){
 "use strict";
 

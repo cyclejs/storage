@@ -1,9 +1,10 @@
+import Rx from 'rx'
+
 function getStorage$(request$, type) {
-  if (type === `local`) {
-    return request$.filter((req) => !req.target || req.target === `local`)
-  } else {
-    return request$.filter((req) => req.target === `session`)
-  }
+  return Rx.Observable.if(() => type === `local`,
+    request$.filter((req) => !req.target || req.target === `local`),
+    request$.filter((req) => req.target === `session`)
+  )
 }
 
 function storageKey(n, request$, type = `local`) {
