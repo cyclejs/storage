@@ -1,22 +1,22 @@
+import XStreamAdapter from '@cycle/xstream-adapter'
 import writeToStore from './writeToStore'
 import responseCollection from './responseCollection'
 
 /**
  * Storage Driver.
  *
- * This is a localStorage and sessionStorage Driver for Cycle.js
- * apps. The driver is also a function, and it takes an Observable of requests
- * as input, and returns a **`responseCollection`** with functions that allow
- * reading from the storage objects. The functions on the
- * **`responseCollection`** return Observables of the storage data
- * that was requested.
+ * This is a localStorage and sessionStorage Driver for Cycle.js apps. The
+ * driver is also a function, and it takes a stream of requests as input, and
+ * returns a **`responseCollection`** with functions that allow reading from the
+ * storage objects. The functions on the **`responseCollection`** return streams
+ * of the storage data that was requested.
  *
- * **Requests**. The Observable of requests should emit objects.
- * These should be instructions to write to the desired Storage object.
- * Here are the `request` object properties:
+ * **Requests**. The stream of requests should emit objects. These should be
+ * instructions to write to the desired Storage object. Here are the `request`
+ * object properties:
  *
- * - `target` *(String)*: type of storage, can be `local` or `session`,
- * defaults to `local`.
+ * - `target` *(String)*: type of storage, can be `local` or `session`, defaults
+ * to `local`.
  * - `action` *(String)*: type of action, can be `setItem`, `removeItem` or
  * `clear`, defaults to `setItem`.
  * - `key` *(String)*: storage key.
@@ -24,6 +24,7 @@ import responseCollection from './responseCollection'
  *
  * **responseCollection**. The **`responseCollection`** is an Object that
  * exposes functions to read from local- and sessionStorage.
+ *
  * ```js
  * // Returns key of nth localStorage value.
  * responseCollection.local.getKey(n)
@@ -35,15 +36,19 @@ import responseCollection from './responseCollection'
  * responseCollection.session.getItem(key)
  * ```
  *
- * @param {Observable} request$ - an Observable of write request objects.
+ * @param request$ - a stream of write request objects.
  * @return {Object} the response collection containing functions
  * for reading from storage.
  * @function storageDriver
  */
-export default function storageDriver(request$) {
+function storageDriver(request$) {
   // Execute writing actions.
   request$.subscribe((request) => writeToStore(request))
 
   // Return reading functions.
   return responseCollection(request$)
 }
+
+storageDriver.streamAdapter = XStreamAdapter
+
+export default storageDriver

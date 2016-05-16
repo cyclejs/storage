@@ -7,19 +7,18 @@
 
 Storage Driver.
 
-This is a localStorage and sessionStorage Driver for Cycle.js
-apps. The driver is also a function, and it takes an Observable of requests
-as input, and returns a **`responseCollection`** with functions that allow
-reading from the storage objects. The functions on the
-**`responseCollection`** return Observables of the storage data
-that was requested.
+This is a localStorage and sessionStorage Driver for Cycle.js apps. The
+driver is also a function, and it takes a stream of requests as input, and
+returns a **`responseCollection`** with functions that allow reading from the
+storage objects. The functions on the **`responseCollection`** return streams
+of the storage data that was requested.
 
-**Requests**. The Observable of requests should emit objects.
-These should be instructions to write to the desired Storage object.
-Here are the `request` object properties:
+**Requests**. The stream of requests should emit objects. These should be
+instructions to write to the desired Storage object. Here are the `request`
+object properties:
 
-- `target` *(String)*: type of storage, can be `local` or `session`,
-defaults to `local`.
+- `target` *(String)*: type of storage, can be `local` or `session`, defaults
+to `local`.
 - `action` *(String)*: type of action, can be `setItem`, `removeItem` or
 `clear`, defaults to `setItem`.
 - `key` *(String)*: storage key.
@@ -27,6 +26,7 @@ defaults to `local`.
 
 **responseCollection**. The **`responseCollection`** is an Object that
 exposes functions to read from local- and sessionStorage.
+
 ```js
 // Returns key of nth localStorage value.
 responseCollection.local.getKey(n)
@@ -40,7 +40,7 @@ responseCollection.session.getItem(key)
 
 #### Arguments:
 
-- `request$ :: Observable` - an Observable of write request objects.
+- `request$` - a stream of write request objects.
 
 #### Return:
 

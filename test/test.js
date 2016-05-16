@@ -1,5 +1,5 @@
 var test = require('tape')
-var Rx = require('rx')
+var xs = require('xstream').default
 var writeToStore = require('../lib/writeToStore').default
 var responseCollection = require('../lib/responseCollection').default
 
@@ -117,14 +117,20 @@ test('responseCollection.local.key(n) should return an Observable of the nth key
     },
   ]
 
-  var request$ = Rx.Observable.from(testData)
+  var request$ = xs.fromArray(testData)
 
   localStorage.setItem('testKey', 'testValue')
 
   var key$ = responseCollection(request$).local.key(0)
 
-  key$.subscribe(function(response) {
-    t.equal(response, 'testKey')
+  key$.addListener({
+    next: function(response) {
+      t.equal(response, 'testKey')
+    },
+    error: function(err) {
+      t.fail(err)
+    },
+    complete: function() {},
   })
 
   localStorage.clear()
@@ -148,7 +154,7 @@ test('responseCollection.local.getItem(key) should return an Observable item in 
     },
   ]
 
-  var request$ = Rx.Observable.from(testData)
+  var request$ = xs.fromArray(testData)
 
   localStorage.setItem('testKey', 'testValue')
 
@@ -156,9 +162,15 @@ test('responseCollection.local.getItem(key) should return an Observable item in 
   var i = 0
   var expected = ['testValue', 'testValue1', 'testValue2']
 
-  item$.subscribe(function(item) {
-    t.equal(item, expected[i])
-    i++
+  item$.addListener({
+    next: function(item) {
+      t.equal(item, expected[i])
+      i++
+    },
+    error: function(err) {
+      t.fail(err)
+    },
+    complete: function() {},
   })
 
   localStorage.clear()
@@ -167,13 +179,19 @@ test('responseCollection.local.getItem(key) should return an Observable item in 
 test('responseCollection.local.getItem(key) emit null if localStorage does not contain item for key', function(t) {
   t.plan(1)
 
-  var request$ = Rx.Observable.empty()
+  var request$ = xs.empty()
   var item$ = responseCollection(request$).local.getItem('notExisting')
 
-  item$.subscribe(function(response) {
-    t.equal(response, null)
-  }, function() {
-    t.fail('unxepected error')
+  item$.addListener({
+    next: function(response) {
+      t.equal(response, null)
+    },
+    error: function() {
+      t.fail('unxepected error')
+    },
+    complete: function() {
+      t.end()
+    },
   })
 })
 
@@ -201,14 +219,20 @@ test('responseCollection.session.key(n) should return an Observable of the nth k
     },
   ]
 
-  var request$ = Rx.Observable.from(testData)
+  var request$ = xs.fromArray(testData)
 
   sessionStorage.setItem('testKey', 'testValue')
 
   var key$ = responseCollection(request$).session.key(0)
 
-  key$.subscribe(function(response) {
-    t.equal(response, 'testKey')
+  key$.addListener({
+    next: function(response) {
+      t.equal(response, 'testKey')
+    },
+    error: function(err) {
+      t.fail(err)
+    },
+    complete: function() {},
   })
 
   sessionStorage.clear()
@@ -232,7 +256,7 @@ test('responseCollection.session.getItem(key) should return an Observable item i
     },
   ]
 
-  var request$ = Rx.Observable.from(testData)
+  var request$ = xs.fromArray(testData)
 
   sessionStorage.setItem('testKey', 'testValue')
 
@@ -240,9 +264,15 @@ test('responseCollection.session.getItem(key) should return an Observable item i
   var i = 0
   var expected = ['testValue', 'testValue1', 'testValue2']
 
-  item$.subscribe(function(item) {
-    t.equal(item, expected[i])
-    i++
+  item$.addListener({
+    next: function(item) {
+      t.equal(item, expected[i])
+      i++
+    },
+    error: function(err) {
+      t.fail(err)
+    },
+    complete: function() {},
   })
 
   sessionStorage.clear()
@@ -251,14 +281,18 @@ test('responseCollection.session.getItem(key) should return an Observable item i
 test('responseCollection.local.getItem(key) emit null if sessionStorage does not contain item for key', function(t) {
   t.plan(1)
 
-  var request$ = Rx.Observable.empty()
+  var request$ = xs.empty()
   var item$ = responseCollection(request$).session.getItem('notExisting')
 
-  item$.subscribe(function(response) {
-    t.equal(response, null)
-  }, function() {
-    t.fail('unxepected error')
-  }, function() {
-    t.end()
+  item$.addListener({
+    next: function(response) {
+      t.equal(response, null)
+    },
+    error: function() {
+      t.fail('unxepected error')
+    },
+    complete: function() {
+      t.end()
+    },
   })
 })

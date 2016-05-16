@@ -1,10 +1,11 @@
-import Rx from 'rx'
+import dropRepeats from 'xstream/extra/dropRepeats'
 
 function getStorage$(request$, type) {
-  return Rx.Observable.if(() => type === `local`,
-    request$.filter((req) => !req.target || req.target === `local`),
-    request$.filter((req) => req.target === `session`)
-  )
+  if (type === `local`) {
+    return request$.filter((req) => !req.target || req.target === `local`)
+  } else {
+    return request$.filter((req) => req.target === `session`)
+  }
 }
 
 function storageKey(n, request$, type = `local`) {
@@ -16,7 +17,7 @@ function storageKey(n, request$, type = `local`) {
     .filter((req) => req.key === key)
     .map((req) => req.key)
     .startWith(key)
-    .distinctUntilChanged()
+    .compose(dropRepeats())
 }
 
 function storageGetItem(key, request$, type = `local`) {
