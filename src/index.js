@@ -41,12 +41,16 @@ import responseCollection from './responseCollection'
  * for reading from storage.
  * @function storageDriver
  */
-function storageDriver(request$) {
+function storageDriver(request$, runStreamAdapter) {
   // Execute writing actions.
-  request$.subscribe((request) => writeToStore(request))
+  request$.addListener({
+    next: (request) => writeToStore(request),
+    error: () => {},
+    complete: () => {},
+  })
 
   // Return reading functions.
-  return responseCollection(request$)
+  return responseCollection(request$, runStreamAdapter)
 }
 
 storageDriver.streamAdapter = XStreamAdapter

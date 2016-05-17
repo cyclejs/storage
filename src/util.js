@@ -1,4 +1,5 @@
 import dropRepeats from 'xstream/extra/dropRepeats'
+import XStreamAdapter from '@cycle/xstream-adapter'
 
 function getStorage$(request$, type) {
   if (type === `local`) {
@@ -30,11 +31,21 @@ function storageGetItem(key, request$, type = `local`) {
     .startWith(storageObj.getItem(key))
 }
 
-export default function getResponseObj(request$, type = `local`) {
+export default function getResponseObj(request$, runSA, type = `local`) {
   return {
-    // Function returning Observable of the nth key.
-    key(n) { return storageKey(n, request$, type) },
-    // Function returning Observable of item values.
-    getItem(key) { return storageGetItem(key, request$, type) },
+    // Function returning stream of the nth key.
+    key(n) {
+      return runSA.adapt(
+        storageKey(n, request$, type),
+        XStreamAdapter.streamSubscribe
+      )
+    },
+    // Function returning stream of item values.
+    getItem(key) {
+      return runSA.adapt(
+        storageGetItem(key, request$, type),
+        XStreamAdapter.streamSubscribe
+      )
+    },
   }
 }
