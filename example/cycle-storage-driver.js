@@ -1970,14 +1970,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * for reading from storage.
  * @function storageDriver
  */
-function storageDriver(request$) {
+function storageDriver(request$, runStreamAdapter) {
   // Execute writing actions.
-  request$.subscribe(function (request) {
-    return (0, _writeToStore2.default)(request);
+  request$.addListener({
+    next: function next(request) {
+      return (0, _writeToStore2.default)(request);
+    },
+    error: function error() {},
+    complete: function complete() {}
   });
 
   // Return reading functions.
-  return (0, _responseCollection2.default)(request$);
+  return (0, _responseCollection2.default)(request$, runStreamAdapter);
 }
 
 storageDriver.streamAdapter = _xstreamAdapter2.default;
@@ -1991,15 +1995,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-exports.default = function (request$) {
+exports.default = function (request$, runStreamAdapter) {
   return {
     // For localStorage.
     get local() {
-      return (0, _util2.default)(request$);
+      return (0, _util2.default)(request$, runStreamAdapter);
     },
     // For sessionStorage.
     get session() {
-      return (0, _util2.default)(request$, 'session');
+      return (0, _util2.default)(request$, runStreamAdapter, 'session');
     }
   };
 };
@@ -2021,6 +2025,10 @@ exports.default = getResponseObj;
 var _dropRepeats = require('xstream/extra/dropRepeats');
 
 var _dropRepeats2 = _interopRequireDefault(_dropRepeats);
+
+var _xstreamAdapter = require('@cycle/xstream-adapter');
+
+var _xstreamAdapter2 = _interopRequireDefault(_xstreamAdapter);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2062,24 +2070,24 @@ function storageGetItem(key, request$) {
   }).startWith(storageObj.getItem(key));
 }
 
-function getResponseObj(request$) {
-  var type = arguments.length <= 1 || arguments[1] === undefined ? 'local' : arguments[1];
+function getResponseObj(request$, runSA) {
+  var type = arguments.length <= 2 || arguments[2] === undefined ? 'local' : arguments[2];
 
   return {
-    // Function returning Observable of the nth key.
+    // Function returning stream of the nth key.
 
     key: function key(n) {
-      return storageKey(n, request$, type);
+      return runSA.adapt(storageKey(n, request$, type), _xstreamAdapter2.default.streamSubscribe);
     },
 
-    // Function returning Observable of item values.
+    // Function returning stream of item values.
     getItem: function getItem(key) {
-      return storageGetItem(key, request$, type);
+      return runSA.adapt(storageGetItem(key, request$, type), _xstreamAdapter2.default.streamSubscribe);
     }
   };
 }
 
-},{"xstream/extra/dropRepeats":3}],8:[function(require,module,exports){
+},{"@cycle/xstream-adapter":1,"xstream/extra/dropRepeats":3}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
