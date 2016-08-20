@@ -1,5 +1,174 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.CycleStorageDriver = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
+
+var xstream_adapter_1 = require('@cycle/xstream-adapter');
+var writeToStore_1 = require('./writeToStore');
+var responseCollection_1 = require('./responseCollection');
+/**
+ * Storage Driver.
+ *
+ * This is a localStorage and sessionStorage Driver for Cycle.js apps. The
+ * driver is also a function, and it takes a stream of requests as input, and
+ * returns a **`responseCollection`** with functions that allow reading from the
+ * storage objects. The functions on the **`responseCollection`** return streams
+ * of the storage data that was requested.
+ *
+ * **Requests**. The stream of requests should emit objects. These should be
+ * instructions to write to the desired Storage object. Here are the `request`
+ * object properties:
+ *
+ * - `target` *(String)*: type of storage, can be `local` or `session`, defaults
+ * to `local`.
+ * - `action` *(String)*: type of action, can be `setItem`, `removeItem` or
+ * `clear`, defaults to `setItem`.
+ * - `key` *(String)*: storage key.
+ * - `value` *(String)*: storage value.
+ *
+ * **responseCollection**. The **`responseCollection`** is an Object that
+ * exposes functions to read from local- and sessionStorage.
+ *
+ * ```js
+ * // Returns key of nth localStorage value.
+ * responseCollection.local.getKey(n)
+ * // Returns localStorage value of `key`.
+ * responseCollection.local.getItem(key)
+ * // Returns key of nth sessionStorage value.
+ * responseCollection.session.getKey(n)
+ * // Returns sessionStorage value of `key`.
+ * responseCollection.session.getItem(key)
+ * ```
+ *
+ * @param request$ - a stream of write request objects.
+ * @return {Object} the response collection containing functions
+ * for reading from storage.
+ * @function storageDriver
+ */
+function storageDriver(request$, runStreamAdapter) {
+    // Execute writing actions.
+    request$.addListener({
+        next: function next(request) {
+            return writeToStore_1.default(request);
+        },
+        error: function error() {},
+        complete: function complete() {}
+    });
+    // Return reading functions.
+    return responseCollection_1.default(request$, runStreamAdapter);
+}
+storageDriver.streamAdapter = xstream_adapter_1.default;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = storageDriver;
+
+
+},{"./responseCollection":2,"./writeToStore":4,"@cycle/xstream-adapter":5}],2:[function(require,module,exports){
+"use strict";
+
+var util_1 = require('./util');
+function default_1(request$, runStreamAdapter) {
+    return {
+        // For localStorage.
+        get local() {
+            return util_1.default(request$, runStreamAdapter);
+        },
+        // For sessionStorage.
+        get session() {
+            return util_1.default(request$, runStreamAdapter, "session");
+        }
+    };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = default_1;
+
+
+},{"./util":3}],3:[function(require,module,exports){
+"use strict";
+
+var dropRepeats_1 = require('xstream/extra/dropRepeats');
+var xstream_adapter_1 = require('@cycle/xstream-adapter');
+function getStorage$(request$, type) {
+    if (type === 'local') {
+        return request$.filter(function (req) {
+            return !req.target || req.target === 'local';
+        });
+    } else {
+        return request$.filter(function (req) {
+            return req.target === 'session';
+        });
+    }
+}
+function storageKey(n, request$) {
+    var type = arguments.length <= 2 || arguments[2] === undefined ? 'local' : arguments[2];
+
+    var storage$ = getStorage$(request$, type);
+    var key = type === 'local' ? localStorage.key(n) : sessionStorage.key(n);
+    return storage$.filter(function (req) {
+        return req.key === key;
+    }).map(function (req) {
+        return req.key;
+    }).startWith(key).compose(dropRepeats_1.default());
+}
+function storageGetItem(key, request$) {
+    var type = arguments.length <= 2 || arguments[2] === undefined ? 'local' : arguments[2];
+
+    var storage$ = getStorage$(request$, type);
+    var storageObj = type === 'local' ? localStorage : sessionStorage;
+    return storage$.filter(function (req) {
+        return req.key === key;
+    }).map(function (req) {
+        return req.value;
+    }).startWith(storageObj.getItem(key));
+}
+function getResponseObj(request$, runSA) {
+    var type = arguments.length <= 2 || arguments[2] === undefined ? 'local' : arguments[2];
+
+    return {
+        // Function returning stream of the nth key.
+        key: function key(n) {
+            return runSA.adapt(storageKey(n, request$, type), xstream_adapter_1.default.streamSubscribe);
+        },
+
+        // Function returning stream of item values.
+        getItem: function getItem(key) {
+            return runSA.adapt(storageGetItem(key, request$, type), xstream_adapter_1.default.streamSubscribe);
+        }
+    };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = getResponseObj;
+
+
+},{"@cycle/xstream-adapter":5,"xstream/extra/dropRepeats":7}],4:[function(require,module,exports){
+"use strict";
+/**
+ * @function writeToStore
+ * @description
+ * A universal write function for localStorage and sessionStorage.
+ * @param {object} request - the storage request object
+ * @param {string} request.target - a string determines which storage to use
+ * @param {string} request.action - a string determines the write action
+ * @param {string} request.key - the key of a storage item
+ * @param {string} request.value - the value of a storage item
+ */
+
+function writeToStore(_ref) {
+  var _ref$target = _ref.target;
+  var target = _ref$target === undefined ? "local" : _ref$target;
+  var _ref$action = _ref.action;
+  var action = _ref$action === undefined ? "setItem" : _ref$action;
+  var key = _ref.key;
+  var value = _ref.value;
+
+  // Determine the storage target.
+  var storage = target === "local" ? localStorage : sessionStorage;
+  // Execute the storage action and pass arguments if they were defined.
+  storage[action](key, value);
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = writeToStore;
+
+
+},{}],5:[function(require,module,exports){
+"use strict";
 var xstream_1 = require('xstream');
 function logToConsoleError(err) {
     var target = err.stack || err;
@@ -57,7 +226,7 @@ var XStreamAdapter = {
     },
     isValidStream: function (stream) {
         return (typeof stream.addListener === 'function' &&
-            typeof stream.imitate === 'function');
+            typeof stream.shamefullySendNext === 'function');
     },
     streamSubscribe: function (stream, observer) {
         stream.addListener(observer);
@@ -67,7 +236,7 @@ var XStreamAdapter = {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = XStreamAdapter;
 
-},{"xstream":4}],2:[function(require,module,exports){
+},{"xstream":8}],6:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -323,12 +492,18 @@ var PeriodicProducer = (function () {
 }());
 exports.PeriodicProducer = PeriodicProducer;
 var DebugOperator = (function () {
-    function DebugOperator(spy, ins) {
-        if (spy === void 0) { spy = null; }
-        this.spy = spy;
+    function DebugOperator(arg, ins) {
         this.ins = ins;
         this.type = 'debug';
         this.out = null;
+        this.s = null; // spy
+        this.l = null; // label
+        if (typeof arg === 'string') {
+            this.l = arg;
+        }
+        else {
+            this.s = arg;
+        }
     }
     DebugOperator.prototype._start = function (out) {
         this.out = out;
@@ -342,14 +517,17 @@ var DebugOperator = (function () {
         var u = this.out;
         if (!u)
             return;
-        var spy = this.spy;
-        if (spy) {
+        var s = this.s, l = this.l;
+        if (s) {
             try {
-                spy(t);
+                s(t);
             }
             catch (e) {
                 u._e(e);
             }
+        }
+        else if (l) {
+            console.log(l + ':', t);
         }
         else {
             console.log(t);
@@ -1736,13 +1914,13 @@ var Stream = (function () {
      * --1----2-----3-----4--
      * ```
      *
-     * @param {function} spy A function that takes an event as argument, and
-     * returns nothing.
+     * @param {function} labelOrSpy A string to use as the label when printing
+     * debug information on the console, or a 'spy' function that takes an event
+     * as argument, and does not need to return anything.
      * @return {Stream}
      */
-    Stream.prototype.debug = function (spy) {
-        if (spy === void 0) { spy = null; }
-        return new Stream(new DebugOperator(spy, this));
+    Stream.prototype.debug = function (labelOrSpy) {
+        return new Stream(new DebugOperator(labelOrSpy, this));
     };
     /**
      * Forces the Stream to emit the given value to its listeners.
@@ -1838,13 +2016,17 @@ var MemoryStream = (function (_super) {
         }
         _super.prototype._add.call(this, il);
     };
+    MemoryStream.prototype._x = function () {
+        this._has = false;
+        _super.prototype._x.call(this);
+    };
     return MemoryStream;
 }(Stream));
 exports.MemoryStream = MemoryStream;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Stream;
 
-},{}],3:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 var core_1 = require('../core');
 var empty = {};
@@ -1902,7 +2084,7 @@ function dropRepeats(isEqual) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = dropRepeats;
 
-},{"../core":2}],4:[function(require,module,exports){
+},{"../core":6}],8:[function(require,module,exports){
 "use strict";
 var core_1 = require('./core');
 exports.Stream = core_1.Stream;
@@ -1910,215 +2092,5 @@ exports.MemoryStream = core_1.MemoryStream;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = core_1.Stream;
 
-},{"./core":2}],5:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _xstreamAdapter = require('@cycle/xstream-adapter');
-
-var _xstreamAdapter2 = _interopRequireDefault(_xstreamAdapter);
-
-var _writeToStore = require('./writeToStore');
-
-var _writeToStore2 = _interopRequireDefault(_writeToStore);
-
-var _responseCollection = require('./responseCollection');
-
-var _responseCollection2 = _interopRequireDefault(_responseCollection);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * Storage Driver.
- *
- * This is a localStorage and sessionStorage Driver for Cycle.js apps. The
- * driver is also a function, and it takes a stream of requests as input, and
- * returns a **`responseCollection`** with functions that allow reading from the
- * storage objects. The functions on the **`responseCollection`** return streams
- * of the storage data that was requested.
- *
- * **Requests**. The stream of requests should emit objects. These should be
- * instructions to write to the desired Storage object. Here are the `request`
- * object properties:
- *
- * - `target` *(String)*: type of storage, can be `local` or `session`, defaults
- * to `local`.
- * - `action` *(String)*: type of action, can be `setItem`, `removeItem` or
- * `clear`, defaults to `setItem`.
- * - `key` *(String)*: storage key.
- * - `value` *(String)*: storage value.
- *
- * **responseCollection**. The **`responseCollection`** is an Object that
- * exposes functions to read from local- and sessionStorage.
- *
- * ```js
- * // Returns key of nth localStorage value.
- * responseCollection.local.getKey(n)
- * // Returns localStorage value of `key`.
- * responseCollection.local.getItem(key)
- * // Returns key of nth sessionStorage value.
- * responseCollection.session.getKey(n)
- * // Returns sessionStorage value of `key`.
- * responseCollection.session.getItem(key)
- * ```
- *
- * @param request$ - a stream of write request objects.
- * @return {Object} the response collection containing functions
- * for reading from storage.
- * @function storageDriver
- */
-function storageDriver(request$, runStreamAdapter) {
-  // Execute writing actions.
-  request$.addListener({
-    next: function next(request) {
-      return (0, _writeToStore2.default)(request);
-    },
-    error: function error() {},
-    complete: function complete() {}
-  });
-
-  // Return reading functions.
-  return (0, _responseCollection2.default)(request$, runStreamAdapter);
-}
-
-storageDriver.streamAdapter = _xstreamAdapter2.default;
-
-exports.default = storageDriver;
-
-},{"./responseCollection":6,"./writeToStore":8,"@cycle/xstream-adapter":1}],6:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-exports.default = function (request$, runStreamAdapter) {
-  return {
-    // For localStorage.
-    get local() {
-      return (0, _util2.default)(request$, runStreamAdapter);
-    },
-    // For sessionStorage.
-    get session() {
-      return (0, _util2.default)(request$, runStreamAdapter, 'session');
-    }
-  };
-};
-
-var _util = require('./util');
-
-var _util2 = _interopRequireDefault(_util);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-},{"./util":7}],7:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = getResponseObj;
-
-var _dropRepeats = require('xstream/extra/dropRepeats');
-
-var _dropRepeats2 = _interopRequireDefault(_dropRepeats);
-
-var _xstreamAdapter = require('@cycle/xstream-adapter');
-
-var _xstreamAdapter2 = _interopRequireDefault(_xstreamAdapter);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function getStorage$(request$, type) {
-  if (type === 'local') {
-    return request$.filter(function (req) {
-      return !req.target || req.target === 'local';
-    });
-  } else {
-    return request$.filter(function (req) {
-      return req.target === 'session';
-    });
-  }
-}
-
-function storageKey(n, request$) {
-  var type = arguments.length <= 2 || arguments[2] === undefined ? 'local' : arguments[2];
-
-  var storage$ = getStorage$(request$, type);
-  var key = type === 'local' ? localStorage.key(n) : sessionStorage.key(n);
-
-  return storage$.filter(function (req) {
-    return req.key === key;
-  }).map(function (req) {
-    return req.key;
-  }).startWith(key).compose((0, _dropRepeats2.default)());
-}
-
-function storageGetItem(key, request$) {
-  var type = arguments.length <= 2 || arguments[2] === undefined ? 'local' : arguments[2];
-
-  var storage$ = getStorage$(request$, type);
-  var storageObj = type === 'local' ? localStorage : sessionStorage;
-
-  return storage$.filter(function (req) {
-    return req.key === key;
-  }).map(function (req) {
-    return req.value;
-  }).startWith(storageObj.getItem(key));
-}
-
-function getResponseObj(request$, runSA) {
-  var type = arguments.length <= 2 || arguments[2] === undefined ? 'local' : arguments[2];
-
-  return {
-    // Function returning stream of the nth key.
-
-    key: function key(n) {
-      return runSA.adapt(storageKey(n, request$, type), _xstreamAdapter2.default.streamSubscribe);
-    },
-
-    // Function returning stream of item values.
-    getItem: function getItem(key) {
-      return runSA.adapt(storageGetItem(key, request$, type), _xstreamAdapter2.default.streamSubscribe);
-    }
-  };
-}
-
-},{"@cycle/xstream-adapter":1,"xstream/extra/dropRepeats":3}],8:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * @function writeToStore
- * @description
- * A universal write function for localStorage and sessionStorage.
- * @param {object} request - the storage request object
- * @param {string} request.target - a string determines which storage to use
- * @param {string} request.action - a string determines the write action
- * @param {string} request.key - the key of a storage item
- * @param {string} request.value - the value of a storage item
- */
-function writeToStore(_ref) {
-  var _ref$target = _ref.target;
-  var target = _ref$target === undefined ? "local" : _ref$target;
-  var _ref$action = _ref.action;
-  var action = _ref$action === undefined ? "setItem" : _ref$action;
-  var key = _ref.key;
-  var value = _ref.value;
-
-  // Determine the storage target.
-  var storage = target === "local" ? localStorage : sessionStorage;
-
-  // Execute the storage action and pass arguments if they were defined.
-  storage[action](key, value);
-}
-
-exports.default = writeToStore;
-
-},{}]},{},[5])(5)
+},{"./core":6}]},{},[1])(1)
 });

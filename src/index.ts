@@ -53,6 +53,6 @@ function storageDriver(request$, runStreamAdapter) {
   return responseCollection(request$, runStreamAdapter)
 }
 
-storageDriver.streamAdapter = XStreamAdapter
+(<any> storageDriver).streamAdapter = XStreamAdapter
 
 export default storageDriver

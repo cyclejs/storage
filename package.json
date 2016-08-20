@@ -1,13 +1,14 @@
 {
   "name": "@cycle/storage",
-  "version": "3.0.0-rc3",
-  "description": "A Cycle.js driver for localStorage and sessionStorage.",
+  "version": "3.1.0",
+  "description": "A Cycle.js driver for localStorage and sessionStorage written in typescript.",
   "main": "lib/index.js",
   "author": "Kahlil Lechelt",
   "license": "MIT",
-  "repository": "kahlil/cycle-storage-driver",
+  "repository": "SuperManitu/storage",
   "scripts": {
-    "transpile": "babel -d lib src",
+    "transpile": "babel -d lib build",
+    "build": "tsc",
     "zuul:local": "zuul --local 8080 -- test/test.js",
     "test:ci": "zuul -- test/test.js",
     "test": "npm-run-all lint transpile zuul:local",
@@ -16,10 +17,11 @@
     "open": "opener http://localhost:8080/__zuul",
     "docs": "node ./scripts/make-api-docs.js",
     "mkdirp:dist": "mkdirp dist",
-    "browserify": "browserify src/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile dist/cycle-storage-driver.js",
-    "browserify:example": "browserify src/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile example/cycle-storage-driver.js",
+    "mkdirp:build": "mkdirp build",
+    "browserify": "browserify build/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile dist/cycle-storage-driver.js",
+    "browserify:example": "browserify build/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile example/cycle-storage-driver.js",
     "uglify": "uglifyjs dist/cycle-storage-driver.js -o dist/cycle-storage-driver.min.js",
-    "build:js": "npm-run-all mkdirp:dist browserify browserify:example uglify",
+    "build:js": "npm-run-all mkdirp:build build mkdirp:dist browserify browserify:example uglify",
     "serve": "live-server example"
   },
   "dependencies": {
@@ -29,6 +31,7 @@
     "xstream": ">=2"
   },
   "devDependencies": {
+    "@cycle/base": "^4.0.2",
     "@cycle/core": "^5.0.1",
     "@cycle/rx-adapter": "^1.0.3",
     "babel-cli": "^6.1.2",
@@ -47,10 +50,12 @@
     "mkdirp": "^0.5.1",
     "npm-run-all": "^1.2.13",
     "opener": "^1.4.1",
+    "rx": "^4.1.0",
     "tape": "^4.2.2",
+    "typescript": "^1.8.10",
     "uglify-js": "^2.6.0",
     "watchify": "^3.6.0",
-    "xstream": "^2.4.3",
+    "xstream": "^2.6.2",
     "zuul": "^3.7.2"
   },
   "browserify-shim": {
