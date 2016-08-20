@@ -1,3 +1,5 @@
+import { StorageRequest } from './index'
+
 /**
  * @function writeToStore
  * @description
@@ -8,9 +10,9 @@
  * @param {string} request.key - the key of a storage item
  * @param {string} request.value - the value of a storage item
  */
-function writeToStore({target = `local`, action = `setItem`, key, value}) {
+function writeToStore({target = 'local', action = 'setItem', key, value} : StorageRequest) : void {
   // Determine the storage target.
-  const storage = target === `local` ? localStorage : sessionStorage
+  const storage : Storage = target === 'local' ? localStorage : sessionStorage
 
   // Execute the storage action and pass arguments if they were defined.
   storage[action](key, value)

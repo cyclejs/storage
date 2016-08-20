@@ -1,7 +1,17 @@
 import dropRepeats from 'xstream/extra/dropRepeats'
 import XStreamAdapter from '@cycle/xstream-adapter'
 
-function getStorage$(request$, type) {
+import { StreamAdapter } from '@cycle/base'
+import { StorageRequest } from './index'
+import { Stream } from 'xstream'
+
+export interface ResponseObject
+{
+  key : (n) => any //Streams in the chosen library
+  getItem : (key) => any
+}
+
+function getStorage$(request$ : Stream<StorageRequest>, type : 'local' | 'session') : Stream<StorageRequest> {
   if (type === `local`) {
     return request$.filter((req) => !req.target || req.target === `local`)
   } else {
@@ -9,9 +19,9 @@ function getStorage$(request$, type) {
   }
 }
 
-function storageKey(n, request$, type = `local`) {
-  const storage$ = getStorage$(request$, type)
-  const key = type === `local` ?
+function storageKey(n : number, request$ : Stream<StorageRequest>, type : 'local' | 'session' = 'local') : Stream<string> {
+  const storage$ : Stream<StorageRequest> = getStorage$(request$, type)
+  const key : string = type === `local` ?
     localStorage.key(n) : sessionStorage.key(n)
 
   return storage$
@@ -21,9 +31,9 @@ function storageKey(n, request$, type = `local`) {
     .compose(dropRepeats())
 }
 
-function storageGetItem(key, request$, type = `local`) {
-  const storage$ = getStorage$(request$, type)
-  let storageObj = type === `local` ? localStorage : sessionStorage
+function storageGetItem(key : string, request$ : Stream<StorageRequest>, type : 'local' | 'session' = 'local') : Stream<string> {
+  const storage$ : Stream<StorageRequest> = getStorage$(request$, type)
+  let storageObj : Storage = type === `local` ? localStorage : sessionStorage
 
   return storage$
     .filter((req) => req.key === key)
@@ -31,7 +41,7 @@ function storageGetItem(key, request$, type = `local`) {
     .startWith(storageObj.getItem(key))
 }
 
-export default function getResponseObj(request$, runSA, type = `local`) {
+export default function getResponseObj(request$ : Stream<StorageRequest>, runSA : StreamAdapter, type : 'local' | 'session' = 'local') : ResponseObject {
   return {
     // Function returning stream of the nth key.
     key(n) {

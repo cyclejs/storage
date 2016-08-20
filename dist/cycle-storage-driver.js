@@ -72,7 +72,7 @@ function default_1(request$, runStreamAdapter) {
         },
         // For sessionStorage.
         get session() {
-            return util_1.default(request$, runStreamAdapter, "session");
+            return util_1.default(request$, runStreamAdapter, 'session');
         }
     };
 }
@@ -152,14 +152,14 @@ exports.default = getResponseObj;
 
 function writeToStore(_ref) {
   var _ref$target = _ref.target;
-  var target = _ref$target === undefined ? "local" : _ref$target;
+  var target = _ref$target === undefined ? 'local' : _ref$target;
   var _ref$action = _ref.action;
-  var action = _ref$action === undefined ? "setItem" : _ref$action;
+  var action = _ref$action === undefined ? 'setItem' : _ref$action;
   var key = _ref.key;
   var value = _ref.value;
 
   // Determine the storage target.
-  var storage = target === "local" ? localStorage : sessionStorage;
+  var storage = target === 'local' ? localStorage : sessionStorage;
   // Execute the storage action and pass arguments if they were defined.
   storage[action](key, value);
 }

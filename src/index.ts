@@ -1,6 +1,17 @@
 import XStreamAdapter from '@cycle/xstream-adapter'
 import writeToStore from './writeToStore'
-import responseCollection from './responseCollection'
+import responseCollection, { ResponseCollection } from './responseCollection'
+
+import { Stream } from 'xstream'
+import { StreamAdapter } from '@cycle/base'
+
+export interface StorageRequest
+{
+  target? : string
+  action? : string
+  key : string
+  value: string
+}
 
 /**
  * Storage Driver.
@@ -41,7 +52,7 @@ import responseCollection from './responseCollection'
  * for reading from storage.
  * @function storageDriver
  */
-function storageDriver(request$, runStreamAdapter) {
+function storageDriver(request$ : Stream<StorageRequest>, runStreamAdapter : StreamAdapter) : ResponseCollection {
   // Execute writing actions.
   request$.addListener({
     next: (request) => writeToStore(request),
