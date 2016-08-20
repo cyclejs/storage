@@ -6,9 +6,11 @@
         "sourceMap": true,
         "jsx" : "preserve",
         "target": "ES6",
-        "outDir": "build"
+        "outDir": "build",
+        "declaration": true
     },
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "build"
     ]
 }

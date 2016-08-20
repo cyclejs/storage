@@ -1,9 +1,8 @@
 import XStreamAdapter from '@cycle/xstream-adapter'
-import writeToStore from './writeToStore'
-import responseCollection, { ResponseCollection } from './responseCollection'
-
 import { Stream } from 'xstream'
 import { StreamAdapter } from '@cycle/base'
+import writeToStore from './writeToStore'
+import responseCollection from './responseCollection'
 
 export interface StorageRequest
 {
@@ -11,6 +10,18 @@ export interface StorageRequest
   action? : string
   key : string
   value: string
+}
+
+export interface ResponseCollection
+{
+  local : ResponseObject
+  session : ResponseObject
+}
+
+export interface ResponseObject
+{
+  key : (n) => any //Streams in the chosen library
+  getItem : (key) => any
 }
 
 /**

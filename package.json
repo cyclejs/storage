@@ -3,9 +3,10 @@
   "version": "3.1.0",
   "description": "A Cycle.js driver for localStorage and sessionStorage written in typescript.",
   "main": "lib/index.js",
+  "typings": "build/index.d.ts",
   "author": "Kahlil Lechelt",
   "license": "MIT",
-  "repository": "SuperManitu/storage",
+  "repository": "cyclejs/storage",
   "scripts": {
     "transpile": "babel -d lib build",
     "build": "tsc",

@@ -1,15 +1,8 @@
 import dropRepeats from 'xstream/extra/dropRepeats'
-import XStreamAdapter from '@cycle/xstream-adapter'
-
-import { StreamAdapter } from '@cycle/base'
-import { StorageRequest } from './index'
 import { Stream } from 'xstream'
-
-export interface ResponseObject
-{
-  key : (n) => any //Streams in the chosen library
-  getItem : (key) => any
-}
+import XStreamAdapter from '@cycle/xstream-adapter'
+import { StreamAdapter } from '@cycle/base'
+import { StorageRequest, ResponseObject } from './index'
 
 function getStorage$(request$ : Stream<StorageRequest>, type : 'local' | 'session') : Stream<StorageRequest> {
   if (type === `local`) {
