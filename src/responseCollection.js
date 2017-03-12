@@ -1,14 +1,14 @@
 import getResponseObj from './util'
 
-export default function(request$, runStreamAdapter) {
+export default function(request$) {
   return {
     // For localStorage.
     get local() {
-      return getResponseObj(request$, runStreamAdapter)
+      return getResponseObj(request$)
     },
     // For sessionStorage.
     get session() {
-      return getResponseObj(request$, runStreamAdapter, `session`)
+      return getResponseObj(request$, `session`)
     },
   }
 }
