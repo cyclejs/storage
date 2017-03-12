@@ -1,4 +1,3 @@
-import XStreamAdapter from '@cycle/xstream-adapter'
 import writeToStore from './writeToStore'
 import responseCollection from './responseCollection'
 
@@ -41,7 +40,7 @@ import responseCollection from './responseCollection'
  * for reading from storage.
  * @function storageDriver
  */
-function storageDriver(request$, runStreamAdapter) {
+function storageDriver(request$) {
   // Execute writing actions.
   request$.addListener({
     next: (request) => writeToStore(request),
@@ -50,9 +49,7 @@ function storageDriver(request$, runStreamAdapter) {
   })
 
   // Return reading functions.
-  return responseCollection(request$, runStreamAdapter)
+  return responseCollection(request$)
 }
-
-storageDriver.streamAdapter = XStreamAdapter
 
 export default storageDriver

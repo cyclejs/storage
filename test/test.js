@@ -1,21 +1,18 @@
 var test = require('tape')
 var xs = require('xstream').default
-var RxAdapter = require('@cycle/rx-adapter').default
-var XStreamAdapter = require('@cycle/xstream-adapter').default
 var writeToStore = require('../lib/writeToStore').default
 var responseCollection = require('../lib/responseCollection').default
 var storageDriver = require('../lib/index').default
 
 test('storageDriver should return source that yields according to the runStreamAdapter', function(t) {
-  t.plan(2)
+  t.plan(1)
 
   localStorage.setItem('testKeyFoo', 'testValueFoo')
 
   var sink = xs.never()
-  var source = storageDriver(sink, RxAdapter)
+  var source = storageDriver(sink)
   var observable = source.local.key('testKeyFoo')
-  t.equal(typeof observable.subscribe, 'function')
-  t.equal(typeof observable.flatMap, 'function')
+  t.equal(typeof observable.addListener, 'function')
 
   localStorage.clear()
 })
@@ -138,7 +135,7 @@ test('responseCollection.local.key(n) should return an Observable of the nth key
 
   localStorage.setItem('testKey', 'testValue')
 
-  var key$ = responseCollection(request$, XStreamAdapter).local.key(0)
+  var key$ = responseCollection(request$).local.key(0)
 
   key$.addListener({
     next: function(response) {
@@ -175,7 +172,7 @@ test('responseCollection.local.getItem(key) should return an Observable item in 
 
   localStorage.setItem('testKey', 'testValue')
 
-  var item$ = responseCollection(request$, XStreamAdapter).local.getItem('testKey')
+  var item$ = responseCollection(request$).local.getItem('testKey')
   var i = 0
   var expected = ['testValue', 'testValue1', 'testValue2']
 
@@ -197,7 +194,7 @@ test('responseCollection.local.getItem(key) emit null if localStorage does not c
   t.plan(1)
 
   var request$ = xs.empty()
-  var item$ = responseCollection(request$, XStreamAdapter).local.getItem('notExisting')
+  var item$ = responseCollection(request$).local.getItem('notExisting')
 
   item$.addListener({
     next: function(response) {
@@ -240,7 +237,7 @@ test('responseCollection.session.key(n) should return an Observable of the nth k
 
   sessionStorage.setItem('testKey', 'testValue')
 
-  var key$ = responseCollection(request$, XStreamAdapter).session.key(0)
+  var key$ = responseCollection(request$).session.key(0)
 
   key$.addListener({
     next: function(response) {
@@ -277,7 +274,7 @@ test('responseCollection.session.getItem(key) should return an Observable item i
 
   sessionStorage.setItem('testKey', 'testValue')
 
-  var item$ = responseCollection(request$, XStreamAdapter).session.getItem('testKey')
+  var item$ = responseCollection(request$).session.getItem('testKey')
   var i = 0
   var expected = ['testValue', 'testValue1', 'testValue2']
 
@@ -299,7 +296,7 @@ test('responseCollection.local.getItem(key) emit null if sessionStorage does not
   t.plan(1)
 
   var request$ = xs.empty()
-  var item$ = responseCollection(request$, XStreamAdapter).session.getItem('notExisting')
+  var item$ = responseCollection(request$).session.getItem('notExisting')
 
   item$.addListener({
     next: function(response) {
