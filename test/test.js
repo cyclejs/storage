@@ -47,7 +47,7 @@ test('writeToStore function should remove item from localStore', function(t) {
   writeToStore({target: 'local', action: 'removeItem', key: 'testKey3'})
 
   t.equal(localStorage.getItem('testKey2'), null)
-  t.equal(localStorage.getItem('testKey2'), null)
+  t.equal(localStorage.getItem('testKey3'), null)
 
   localStorage.clear()
 })
