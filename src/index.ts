@@ -1,5 +1,5 @@
-import writeToStore from './writeToStore'
-import responseCollection from './responseCollection'
+import writeToStore from './writeToStore';
+import responseCollection from './responseCollection';
 
 /**
  * Storage Driver.
@@ -43,13 +43,13 @@ import responseCollection from './responseCollection'
 function storageDriver(request$) {
   // Execute writing actions.
   request$.addListener({
-    next: (request) => writeToStore(request),
+    next: request => writeToStore(request),
     error: () => {},
     complete: () => {},
-  })
+  });
 
   // Return reading functions.
-  return responseCollection(request$)
+  return responseCollection(request$);
 }
 
-export default storageDriver
+export default storageDriver;

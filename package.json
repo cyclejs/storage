@@ -37,6 +37,7 @@
     "localstorage-memory": "^1.0.2",
     "mkdirp": "^0.5.1",
     "opener": "^1.4.3",
+    "prettier": "^1.5.3",
     "tape": "^4.8.0",
     "ts-node": "^3.3.0",
     "typescript": "^2.4.2",
@@ -52,6 +53,7 @@
     "xstream": "global:xstream"
   },
   "scripts": {
+    "format": "prettier --write --single-quote --no-bracket-spacing --trailing-comma=all '{src,test}/**/*.{ts,js}'",
     "build": "tsc -d",
     "test-node": "ts-node test/*.ts",
     "test": "npm run test-node",

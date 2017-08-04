@@ -8,12 +8,22 @@
  * @param {string} request.key - the key of a storage item
  * @param {string} request.value - the value of a storage item
  */
-function writeToStore({target = `local`, action = `setItem`, key, value}:{target?: string, action?: string, key?: string, value?: any}) {
+function writeToStore({
+  target = `local`,
+  action = `setItem`,
+  key,
+  value,
+}: {
+  target?: string;
+  action?: string;
+  key?: string;
+  value?: any;
+}) {
   // Determine the storage target.
-  const storage = target === `local` ? localStorage : sessionStorage
+  const storage = target === `local` ? localStorage : sessionStorage;
 
   // Execute the storage action and pass arguments if they were defined.
-  storage[action](key, value)
+  storage[action](key, value);
 }
 
-export default writeToStore
+export default writeToStore;
