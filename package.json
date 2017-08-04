@@ -25,10 +25,17 @@
     "xstream": "*"
   },
   "devDependencies": {
+    "@cycle/dom": "^18.0.0",
     "@types/mocha": "^2.2.41",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babelify": "^7.3.0",
     "browserify": "^14.4.0",
     "browserify-shim": "^3.8.14",
+    "cp-cli": "^1.0.2",
+    "mkdirp": "^0.5.1",
     "mocha": "^3.5.0",
+    "opener": "^1.4.3",
     "ts-node": "^3.3.0",
     "typescript": "^2.4.2",
     "xstream": "^10.9.0"
@@ -43,10 +50,15 @@
     "xstream": "global:xstream"
   },
   "scripts": {
+    "build": "tsc -d",
     "test-node": "mocha test/*.ts --require ts-node/register",
     "test": "npm run test-node",
     "test-ci": "npm run test",
+    "prebrowserify": "mkdirp dist",
     "browserify": "browserify lib/index.js --global-transform=browserify-shim --standalone CycleStorage --exclude xstream --outfile dist/cycle-storage.js",
-    "minify": "node ./.scripts/minify.js dist/cycle-storage.js dist/cycle-storage.min.js"
+    "minify": "node ./.scripts/minify.js dist/cycle-storage.js dist/cycle-storage.min.js",
+    "prebrowserify:example": "mkdirp dist/example",
+    "browserify:example": "browserify example/app.js -t babelify --outfile dist/example/app.js",
+    "example": "npm run build && npm run browserify && npm run browserify:example && cp-cli example/index.html dist/example/index.html && opener dist/example/index.html"
   }
 }

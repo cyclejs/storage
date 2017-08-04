@@ -2,11 +2,11 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "ES5",
-    "outDir": "dist/",
-    "allowJs": true
+    "outDir": "lib/"
   },
   "exclude": [
     "node_modules",
-    "dist/"
+    "dist",
+    "lib"
   ]
 }

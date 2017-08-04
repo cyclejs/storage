@@ -1,36 +1,30 @@
-/* eslint-disable */
-var h = CycleDOM.h
-var makeDOMDriver = CycleDOM.makeDOMDriver
-var storageDriver = CycleStorageDriver.default
+import { run } from '@cycle/run';
+import { makeDOMDriver, div, input } from '@cycle/dom';
+import storageDriver from '../lib/index';
 
-function main(response) {
-  const DOM = response.DOM
-  const storage = response.storage
-  const storageRequest$ = DOM.select('input')
-    .events('keydown')
-    .debounce(50)
-    .map(function(ev) {
-      return {
+function main(sources) {
+  const storageRequest$ = sources.DOM.select('input')
+    .events('input')
+    .map(ev => ({
         key: 'inputText',
         value: ev.target.value
-      };
-    });
+    }));
 
-  return {
-    DOM: storage.local
+  const vdom$ = sources.storage.local
     .getItem('inputText')
     .startWith('')
-    .map(function(text) {
-      return h('div', [
-        h('input', { type: 'text', value: text}),
-        h('div', 'currently in localStorage under key "inputText": ' + text),
-      ])
-    }),
+    .map(text => div([
+      input({ attrs: { type: 'text' }, props: { value: text }}),
+      div(['currently in localStorage under key "inputText": ' + text])
+    ]));
+
+  return {
+    DOM: vdom$,
     storage: storageRequest$
   };
 }
 
-Cycle.run(main, {
+run(main, {
   DOM: makeDOMDriver('#app'),
   storage: storageDriver,
 })
