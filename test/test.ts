@@ -1,8 +1,14 @@
-var test = require('tape')
-var xs = require('xstream').default
-var writeToStore = require('../lib/writeToStore').default
-var responseCollection = require('../lib/responseCollection').default
-var storageDriver = require('../lib/index').default
+let localStorageMemory = require('localstorage-memory');
+let sessionStorageMemory = require('localstorage-memory');
+(global as any).localStorage = localStorageMemory;
+(global as any).sessionStorage = sessionStorageMemory;
+
+import * as test from 'tape';
+import xs from 'xstream';
+import writeToStore from '../src/writeToStore';
+import responseCollection from '../src/responseCollection';
+import storageDriver from '../src/index';
+
 
 test('storageDriver should return source that yields according to the runStreamAdapter', function(t) {
   t.plan(1)
