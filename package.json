@@ -57,7 +57,7 @@
     "build": "tsc -d",
     "test-node": "ts-node test/*.ts",
     "test": "npm run test-node",
-    "test-ci": "npm run test",
+    "test:ci": "npm run test",
     "prebrowserify": "mkdirp dist",
     "browserify": "browserify lib/index.js --global-transform=browserify-shim --standalone CycleStorage --exclude xstream --outfile dist/cycle-storage.js",
     "minify": "node ./.scripts/minify.js dist/cycle-storage.js dist/cycle-storage.min.js",
