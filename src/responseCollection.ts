@@ -1,14 +1,16 @@
+import {Stream} from 'xstream';
 import getResponseObj from './util';
+import {StorageRequest, ResponseCollection, StorageSource} from './index';
 
-export default function(request$) {
+export default function(request$: Stream<StorageRequest>): ResponseCollection {
   return {
     // For localStorage.
-    get local() {
+    get local(): StorageSource {
       return getResponseObj(request$);
     },
     // For sessionStorage.
-    get session() {
-      return getResponseObj(request$, `session`);
+    get session(): StorageSource {
+      return getResponseObj(request$, 'session');
     },
   };
 }

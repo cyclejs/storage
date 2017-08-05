@@ -4,9 +4,7 @@
     "target": "ES5",
     "outDir": "lib/"
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "lib"
+  "include": [
+    "src"
   ]
 }

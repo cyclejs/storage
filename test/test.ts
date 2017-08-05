@@ -4,10 +4,10 @@ let sessionStorageMemory = require('localstorage-memory');
 (global as any).sessionStorage = sessionStorageMemory;
 
 import * as test from 'tape';
-import xs from 'xstream';
+import xs, {Stream} from 'xstream';
 import writeToStore from '../src/writeToStore';
 import responseCollection from '../src/responseCollection';
-import storageDriver from '../src/index';
+import storageDriver, {StorageRequest} from '../src/index';
 
 test('storageDriver should return source that yields according to the runStreamAdapter', function(
   t,
@@ -18,7 +18,7 @@ test('storageDriver should return source that yields according to the runStreamA
 
   var sink = xs.never();
   var source = storageDriver(sink);
-  var observable = source.local.key('testKeyFoo');
+  var observable = source.local.getItem('testKeyFoo');
   t.equal(typeof observable.addListener, 'function');
 
   localStorage.clear();
@@ -119,7 +119,7 @@ test('responseCollection.local.key(n) should return an Observable of the nth key
 ) {
   t.plan(1);
 
-  var testData = [
+  var testData: StorageRequest[] = [
     {
       target: 'local',
       action: 'setItem',
@@ -164,7 +164,7 @@ test('responseCollection.local.getItem(key) should return an Observable item in 
 ) {
   t.plan(3);
 
-  var testData = [
+  var testData: StorageRequest[] = [
     {
       target: 'local',
       action: 'setItem',
@@ -179,7 +179,7 @@ test('responseCollection.local.getItem(key) should return an Observable item in 
     },
   ];
 
-  var request$ = xs.fromArray(testData);
+  var request$: Stream<StorageRequest> = xs.fromArray(testData);
 
   localStorage.setItem('testKey', 'testValue');
 
@@ -227,7 +227,7 @@ test('responseCollection.session.key(n) should return an Observable of the nth k
 ) {
   t.plan(1);
 
-  var testData = [
+  var testData: StorageRequest[] = [
     {
       target: 'session',
       action: 'setItem',
@@ -248,7 +248,7 @@ test('responseCollection.session.key(n) should return an Observable of the nth k
     },
   ];
 
-  var request$ = xs.fromArray(testData);
+  var request$: Stream<StorageRequest> = xs.fromArray(testData);
 
   sessionStorage.setItem('testKey', 'testValue');
 
@@ -272,7 +272,7 @@ test('responseCollection.session.getItem(key) should return an Observable item i
 ) {
   t.plan(3);
 
-  var testData = [
+  var testData: StorageRequest[] = [
     {
       target: 'session',
       action: 'setItem',
@@ -287,7 +287,7 @@ test('responseCollection.session.getItem(key) should return an Observable item i
     },
   ];
 
-  var request$ = xs.fromArray(testData);
+  var request$: Stream<StorageRequest> = xs.fromArray(testData);
 
   sessionStorage.setItem('testKey', 'testValue');
 

@@ -1,5 +1,41 @@
+import {Stream} from 'xstream';
 import writeToStore from './writeToStore';
 import responseCollection from './responseCollection';
+
+export type Target = 'local' | 'session';
+
+export type StorageRequest =
+  | StorageSaveRequest
+  | StorageRemoveRequest
+  | StorageClearRequest;
+
+export interface StorageSaveRequest {
+  target?: Target;
+  action?: 'setItem';
+  key: string;
+  value: any;
+}
+
+export interface StorageRemoveRequest {
+  target?: Target;
+  action: 'removeItem';
+  key: string;
+}
+
+export interface StorageClearRequest {
+  action: 'clear';
+  target?: Target;
+}
+
+export interface ResponseCollection {
+  local: StorageSource;
+  session: StorageSource;
+}
+
+export interface StorageSource {
+  key(n: number): Stream<string>;
+  getItem<T>(key: string): Stream<T>;
+}
 
 /**
  * Storage Driver.
@@ -29,10 +65,6 @@ import responseCollection from './responseCollection';
  * responseCollection.local.getKey(n)
  * // Returns localStorage value of `key`.
  * responseCollection.local.getItem(key)
- * // Returns key of nth sessionStorage value.
- * responseCollection.session.getKey(n)
- * // Returns sessionStorage value of `key`.
- * responseCollection.session.getItem(key)
  * ```
  *
  * @param request$ - a stream of write request objects.
@@ -40,12 +72,10 @@ import responseCollection from './responseCollection';
  * for reading from storage.
  * @function storageDriver
  */
-function storageDriver(request$) {
+function storageDriver(request$: Stream<StorageRequest>) {
   // Execute writing actions.
   request$.addListener({
     next: request => writeToStore(request),
-    error: () => {},
-    complete: () => {},
   });
 
   // Return reading functions.
