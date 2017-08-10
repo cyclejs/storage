@@ -2,57 +2,69 @@
   "name": "@cycle/storage",
   "version": "4.0.0",
   "description": "A Cycle.js driver for localStorage and sessionStorage.",
-  "main": "lib/index.js",
   "author": "Kahlil Lechelt",
   "license": "MIT",
-  "repository": "kahlil/cycle-storage-driver",
-  "scripts": {
-    "transpile": "babel -d lib src",
-    "zuul:local": "zuul --local 8080 -- test/test.js",
-    "test:ci": "zuul -- test/test.js",
-    "test": "npm-run-all lint transpile zuul:local",
-    "lint": "eslint src/*.js test/*.js",
-    "prepublish": "npm run transpile",
-    "open": "opener http://localhost:8080/__zuul",
-    "docs": "node ./scripts/make-api-docs.js",
-    "mkdirp:dist": "mkdirp dist",
-    "browserify": "browserify src/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile dist/cycle-storage-driver.js",
-    "browserify:example": "browserify src/index.js -t babelify -t browserify-shim --standalone CycleStorageDriver --exclude rx --outfile example/cycle-storage-driver.js",
-    "uglify": "uglifyjs dist/cycle-storage-driver.js -o dist/cycle-storage-driver.min.js",
-    "build:js": "npm-run-all mkdirp:dist browserify browserify:example uglify",
-    "serve": "live-server example"
-  },
+  "repository": "https://github.com/cyclejs/storage/tree/master",
+  "contributors": [
+    {
+      "name": "Andre Staltz",
+      "email": "andre@staltz.com"
+    },
+    {
+      "name": "Jan van Brügge",
+      "email": "jan@vanbruegge.de"
+    }
+  ],
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "types": "lib/index.d.ts",
   "dependencies": {
-    "@cycle/run": "^3.0.0"
+    "@cycle/run": "^3.1.0"
   },
   "peerDependencies": {
-    "xstream": ">=2"
+    "xstream": "*"
   },
   "devDependencies": {
-    "@cycle/rxjs-run": "^6.1.0",
-    "babel-cli": "^6.1.2",
-    "babel-eslint": "^4.1.4",
-    "babel-preset-es2015": "^6.1.4",
-    "babel-preset-stage-0": "^6.1.2",
-    "babelify": "^7.2.0",
-    "browserify": "^12.0.1",
-    "browserify-shim": "^3.8.11",
-    "eslint": "^1.9.0",
-    "eslint-config-cycle": "^3.0.0",
-    "eslint-plugin-cycle": "^1.0.2",
-    "faucet": "0.0.1",
-    "live-server": "^0.8.2",
+    "@cycle/dom": "^18.0.0",
+    "@types/node": "^8.0.19",
+    "@types/tape": "^4.2.30",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babelify": "^7.3.0",
+    "browserify": "^14.4.0",
+    "browserify-shim": "^3.8.14",
+    "cp-cli": "^1.0.2",
+    "localstorage-memory": "^1.0.2",
     "markdox": "^0.1.10",
     "mkdirp": "^0.5.1",
-    "npm-run-all": "^1.2.13",
-    "opener": "^1.4.1",
-    "tape": "^4.2.2",
-    "uglify-js": "^2.6.0",
-    "watchify": "^3.6.0",
-    "xstream": "^10.3.0",
-    "zuul": "^3.7.2"
+    "opener": "^1.4.3",
+    "prettier": "^1.5.3",
+    "tape": "^4.8.0",
+    "ts-node": "^3.3.0",
+    "typescript": "^2.4.2",
+    "xstream": "^10.9.0"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "browserify-shim": {
-    "rx": "global:Rx"
+    "xstream": "global:xstream"
+  },
+  "scripts": {
+    "format": "prettier --write --single-quote --no-bracket-spacing --trailing-comma=all '{src,test}/**/*.{ts,js}'",
+    "build": "tsc -d",
+    "docs": "node ./.scripts/make-api-docs.js",
+    "test-node": "ts-node test/*.ts",
+    "test": "npm run test-node",
+    "test:ci": "npm run test",
+    "prebrowserify": "mkdirp dist",
+    "browserify": "browserify lib/index.js --global-transform=browserify-shim --standalone CycleStorage --exclude xstream --outfile dist/cycle-storage.js",
+    "minify": "node ./.scripts/minify.js dist/cycle-storage.js dist/cycle-storage.min.js",
+    "prebrowserify:example": "mkdirp dist/example",
+    "browserify:example": "browserify example/app.js -t babelify --outfile dist/example/app.js",
+    "example": "npm run build && npm run browserify && npm run browserify:example && cp-cli example/index.html dist/example/index.html && opener dist/example/index.html"
   }
 }
