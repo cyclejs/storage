@@ -1,6 +1,6 @@
 {
   "name": "@cycle/storage",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A Cycle.js driver for localStorage and sessionStorage.",
   "author": "Kahlil Lechelt",
   "license": "MIT",
@@ -22,11 +22,9 @@
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "types": "lib/index.d.ts",
-  "dependencies": {
-    "@cycle/run": "^4.0.0"
-  },
   "peerDependencies": {
-    "xstream": "*"
+    "xstream": "*",
+    "@cycle/run": "*"
   },
   "devDependencies": {
     "@cycle/dom": "^20.1.0",
