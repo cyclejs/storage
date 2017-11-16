@@ -32,10 +32,6 @@ exposes functions to read from local- and sessionStorage.
 responseCollection.local.getKey(n)
 // Returns localStorage value of `key`.
 responseCollection.local.getItem(key)
-// Returns key of nth sessionStorage value.
-responseCollection.session.getKey(n)
-// Returns sessionStorage value of `key`.
-responseCollection.session.getItem(key)
 ```
 
 #### Arguments:
