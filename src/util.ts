@@ -1,14 +1,38 @@
-import {Stream} from 'xstream';
+import xs, {Stream} from 'xstream';
 import dropRepeats from 'xstream/extra/dropRepeats';
 import {adapt} from '@cycle/run/lib/adapt';
 import {StorageRequest, StorageSource, Target} from './index';
+
+const extStorageProducer = {
+    start: function (listener) {
+        this.sendReq = function(storage): void {
+            listener.next({
+                target: 'local',
+                key: storage.key,
+                value: storage.newValue
+            })
+        }
+        window.addEventListener('storage', this.sendReq)
+    },
+
+    stop: function () {
+        window.removeEventListener('storage', this.sendReq)
+    }
+}
+
+const extStorage$: Stream<StorageRequest> = typeof window !== "undefined"
+    ? xs.create(extStorageProducer)
+    : xs.never()
 
 function getStorage$(
   request$: Stream<StorageRequest>,
   type: Target,
 ): Stream<StorageRequest> {
   if (type === 'local') {
-    return request$.filter(req => !req.target || req.target === 'local');
+    return xs.merge(
+        request$.filter(req => !req.target || req.target === 'local'),
+        extStorage$
+    );
   } else {
     return request$.filter(req => req.target === 'session');
   }

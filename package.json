@@ -17,6 +17,10 @@
     {
       "name": "Nikhil Tilwalli",
       "email": "ntilwalli@gmail.com"
+    },
+    {
+      "name": "Fabiano Taioli",
+      "email": "ftaioli@gmail.com"
     }
   ],
   "main": "lib/index.js",
@@ -27,8 +31,8 @@
     "@cycle/run": "*"
   },
   "devDependencies": {
-    "@cycle/dom": "^20.1.0",
-    "@types/node": "^8.0.19",
+    "@cycle/dom": "^22.8.0",
+    "@types/node": "^14.14.14",
     "@types/tape": "^4.2.30",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
@@ -43,7 +47,7 @@
     "prettier": "^1.5.3",
     "tape": "^4.8.0",
     "ts-node": "^3.3.0",
-    "typescript": "^2.4.2",
+    "typescript": "^4.1.3",
     "xstream": "^11.0.0"
   },
   "engines": {
